@@ -60,7 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -68,10 +68,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Class\Factory.cs" />
+    <Compile Include="Class\FileBoxing.cs" />
+    <Compile Include="Class\FileDirectoryInfo.cs" />
+    <Compile Include="Class\FilesCollector.cs" />
+    <Compile Include="Class\Settings.cs" />
     <Compile Include="Enum\SourceType.cs" />
+    <Compile Include="Interface\IFactory.cs" />
+    <Compile Include="Interface\IFileBoxing.cs" />
     <Compile Include="Interface\IFileDirectoryInfo.cs" />
-    <Compile Include="Interface\IFilesBoxingController.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Interface\IFilesCollector.cs" />
+    <Compile Include="Interface\ISettings.cs" />
+    <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -102,8 +111,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Class\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
