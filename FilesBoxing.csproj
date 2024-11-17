@@ -40,6 +40,9 @@
     <Reference Include="LibraryKurguzov">
       <HintPath>Source\LibraryKurguzov.dll</HintPath>
     </Reference>
+    <Reference Include="Oracle.ManagedDataAccess">
+      <HintPath>Source\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -68,13 +71,21 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Class\Factory.cs" />
+    <Compile Include="Class\DataBase\DataBaseController.cs" />
+    <Compile Include="Class\Factory\FactoryFileBoxingHandler.cs" />
+    <Compile Include="Class\Factory\FullFileBoxingHandler.cs" />
+    <Compile Include="Class\Factory\SettingsHelper.cs" />
     <Compile Include="Class\FileBoxing.cs" />
     <Compile Include="Class\FileDirectoryInfo.cs" />
     <Compile Include="Class\FilesCollector.cs" />
-    <Compile Include="Class\Settings.cs" />
+    <Compile Include="Interface\DataBase\IDataBaseController.cs" />
+    <Compile Include="Interface\Factory\IFullFactoryFileBoxingHandler.cs" />
+    <Compile Include="Interface\IXmlSettingsFullSerializator.cs" />
+    <Compile Include="Class\Serialization\XmlSettingsFullSerializator.cs" />
+    <Compile Include="Class\Settings\SettingsFileBoxing.cs" />
+    <Compile Include="Class\Settings\XmlSettingsFileBoxingParameters.cs" />
     <Compile Include="Enum\SourceType.cs" />
-    <Compile Include="Interface\IFactory.cs" />
+    <Compile Include="Interface\Factory\IFactoryFileBoxingHandler.cs" />
     <Compile Include="Interface\IFileBoxing.cs" />
     <Compile Include="Interface\IFileDirectoryInfo.cs" />
     <Compile Include="Interface\IFilesCollector.cs" />

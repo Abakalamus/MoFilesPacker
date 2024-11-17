@@ -1,4 +1,6 @@
 ﻿using FilesBoxing.Class;
+using FilesBoxing.Class.DataBase;
+using FilesBoxing.Class.Factory;
 using FilesBoxing.ViewModel;
 
 namespace FilesBoxing.View
@@ -11,9 +13,8 @@ namespace FilesBoxing.View
         public MainWindow()
         {
             InitializeComponent();
-            var settings = new Settings();
-            settings.FillBySource();
-            var viewModel = new MainViewModel(new Factory(), settings);
+            var settings = SettingsHelper.GetSettingsFileBoxing("1.XML");
+            var viewModel = new MainViewModel(new FullFileBoxingHandler(), settings);
             DataContext = viewModel;
         }
     }
