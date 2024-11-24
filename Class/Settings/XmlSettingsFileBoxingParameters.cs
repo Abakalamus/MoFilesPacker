@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using FilesBoxing.Interface;
+using FilesBoxing.Interface.BusinessLogic;
+using FilesBoxing.Interface.Settings;
 
 namespace FilesBoxing.Class.Settings
 {
@@ -28,7 +30,24 @@ namespace FilesBoxing.Class.Settings
         public string TempDirectoryFullPath { get; set; }
         [XmlElement(ElementName = "OutputDirectory")]
         public string OutputDirectoryFullPath { get; set; }
-
+        [XmlIgnore]
+        public IEnumerable<ITypeGroupingSettings> UsingGroups
+        {
+            get => XmlUsingGroups;
+            set
+            {
+                if (value == null)
+                    return;
+                XmlUsingGroups = new List<XmlTypeGroupingSettings>(value.Select(x => new XmlTypeGroupingSettings(x)));
+            }
+        }
+        [XmlArray("UsingArchiveGroups")]
+        [XmlArrayItem("GroupInfo", Type = typeof(XmlTypeGroupingSettings))]
+        public List<XmlTypeGroupingSettings> XmlUsingGroups { get; set; }
+        [XmlElement(ElementName = "DefaultGroupId")]
+        public int DefaultGroupId { get; set; }
+        [XmlElement(ElementName = "BoxAllGroupTypes")]
+        public bool BoxAllGroupTypes { get; set; }
         [XmlIgnore]
         public IEnumerable<string> CodeMoCollection
         {
@@ -58,8 +77,6 @@ namespace FilesBoxing.Class.Settings
         [XmlArray("FileDirectoriesInfo")]
         [XmlArrayItem("FD_Info", Type = typeof(XmlFileDirectoryInfo))]
         public List<XmlFileDirectoryInfo> XmlFileDirectoriesInfo { get; set; }
-        [XmlElement(ElementName = "FileNameArchive")]
-        public string FileNameArchive { get; set; }
 
         public XmlSettingsFileBoxingParameters(){}
         public XmlSettingsFileBoxingParameters(ISettingsFileBoxingParameters parameters)
@@ -69,7 +86,8 @@ namespace FilesBoxing.Class.Settings
             OutputDirectory = parameters.OutputDirectory;
             CodeMoCollection = parameters.CodeMoCollection;
             FileDirectoriesInfo = parameters.FileDirectoriesInfo;
-            FileNameArchive = parameters.FileNameArchive;
+            UsingGroups = parameters.UsingGroups;
+            BoxAllGroupTypes = parameters.BoxAllGroupTypes;
         }
 
         public class XmlFileDirectoryInfo : IFileDirectoryInfo
@@ -86,6 +104,21 @@ namespace FilesBoxing.Class.Settings
             public bool IsEnabled { get; set; }
             [XmlElement("ExtensionFile")]
             public string ExtensionFile { get; set; }
+            [XmlIgnore]
+            public IEnumerable<int> IdUsingGroups
+            {
+                get => XmlIdUsingGroups;
+                set
+                {
+                    if (value == null)
+                        return;
+                    XmlIdUsingGroups = new List<int>(value);
+                }
+            }
+            [XmlArray("UsingGroups")]
+            [XmlArrayItem("IdGroup")]
+            public List<int> XmlIdUsingGroups { get; set; }          
+            public List<XmlTypeGroupingSettings> XmlUsingGroups { get; set; }
             public XmlFileDirectoryInfo()
             { }
             public XmlFileDirectoryInfo(IFileDirectoryInfo source)
@@ -93,6 +126,28 @@ namespace FilesBoxing.Class.Settings
                 ParentFileDirectory = source.ParentFileDirectory;
                 IsEnabled = source.IsEnabled;
                 ExtensionFile = source.ExtensionFile;
+                IdUsingGroups = source.IdUsingGroups;
+            }
+        }
+
+        public class XmlTypeGroupingSettings : ITypeGroupingSettings
+        {
+            [XmlElement(ElementName = "Id")]
+            public int Id { get; set; }
+            [XmlElement(ElementName = "Name")]
+            public string Name { get; set; }
+            [XmlElement(ElementName = "FileNameArchive")]
+            public string FileNameArchive { get; set; }
+
+            public XmlTypeGroupingSettings()
+            {
+            }
+
+            public XmlTypeGroupingSettings(ITypeGroupingSettings source)
+            {
+                Id = source.Id;
+                Name = source.Name;
+                FileNameArchive = source.FileNameArchive;
             }
         }
     }

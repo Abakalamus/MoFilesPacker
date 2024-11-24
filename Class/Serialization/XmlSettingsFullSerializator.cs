@@ -1,6 +1,5 @@
 ﻿using FilesBoxing.Class.Settings;
-using FilesBoxing.Interface;
-
+using FilesBoxing.Interface.Settings;
 using LibraryKurguzov.Class.Xml;
 
 using System;

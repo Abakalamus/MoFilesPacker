@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,11 @@ using System.Windows.Input;
 using FilesBoxing.Interface.DataBase;
 using FilesBoxing.Interface.Factory;
 using LibraryKurguzov.Class.Utility;
+using System.Threading.Tasks;
+using System.Windows;
+using FilesBoxing.Interface.Settings;
+using FilesBoxing.Class;
+using FilesBoxing.Interface.BusinessLogic;
 
 namespace FilesBoxing.ViewModel
 {
@@ -45,21 +51,34 @@ namespace FilesBoxing.ViewModel
             Month = dateTimeMonthBefore.Month;
         }
 
-        public ICommand BoxingMoFilesCommand => new RelayCommand(obj =>
+        public ICommand BoxingMoFilesCommand => new RelayCommand(async obj =>
         {
             try
             {
-                BoxMoFilesIntoSingleFile();
+                var defaultGroup = _settings.ProgramSettings.UsingGroups.First(x => x.Id == _settings.ProgramSettings.DefaultGroupId);
+                var directoryInfoCollection = _settings.ProgramSettings.BoxAllGroupTypes
+                    ? DirectoryFilesInfo.Where(x => x.IsEnabled)
+                    : DirectoryFilesInfo.Where(x => x.IsEnabled && x.IdUsingGroups.Contains(defaultGroup.Id));
+                var nameArchive = _settings.ProgramSettings.BoxAllGroupTypes ? $"Данные реестра {Year} {Month} для [!CODE_MO!]" : defaultGroup.FileNameArchive;
+               // await Task.Run(() => BoxMoFilesIntoSingleFileNew(CodeMoCollection, directoryInfoCollection, nameArchive));
             }
             catch (Exception ex)
             {
-                LogCollection.Add($"Возникло исключение во формирования группированных сведений - {LibraryKurguzov.Class.Exception.ExceptionHanlder.GetAllMessages(ex)}");
+                AddToLogSafeThread($"Возникло исключение во формирования группированных сведений - {LibraryKurguzov.Class.Exception.ExceptionHanlder.GetAllMessages(ex)}");
             }
             finally
             {
-                LogCollection.Add("Работа завершена");
+                AddToLogSafeThread("Работа завершена");
             }
         });
+
+        private void AddToLogSafeThread(string text)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                LogCollection.Add(text);
+            });
+        }
         public ICommand UpdateCollectionMoCommand => new RelayCommand(obj =>
         {
             try
@@ -79,11 +98,11 @@ namespace FilesBoxing.ViewModel
             }
             catch (Exception ex)
             {
-                LogCollection.Add($"Возникло исключение во время обновления данных из БД - {LibraryKurguzov.Class.Exception.ExceptionHanlder.GetAllMessages(ex)}");
+                AddToLogSafeThread($"Возникло исключение во время обновления данных из БД - {LibraryKurguzov.Class.Exception.ExceptionHanlder.GetAllMessages(ex)}");
             }
             finally
             {
-                LogCollection.Add("Обновление данных из БД завершено");
+                AddToLogSafeThread("Обновление данных из БД завершено");
             }
         });
         public ICommand SaveSettingsFileCommand => new RelayCommand(obj =>
@@ -94,30 +113,33 @@ namespace FilesBoxing.ViewModel
             }
             catch (Exception ex)
             {
-                LogCollection.Add($"Возникло исключение во время сохранения данных настроек - {LibraryKurguzov.Class.Exception.ExceptionHanlder.GetAllMessages(ex)}");
+                AddToLogSafeThread($"Возникло исключение во время сохранения данных настроек - {LibraryKurguzov.Class.Exception.ExceptionHanlder.GetAllMessages(ex)}");
             }
             finally
             {
-                LogCollection.Add("Сохранение данных настроек завершено");
+                AddToLogSafeThread("Сохранение данных настроек завершено");
             }
         });
         private void BoxMoFilesIntoSingleFile()
         {
+
             var tempDirectory = _settings.ProgramSettings.TempDirectory;
             var outboxDirectory = _settings.ProgramSettings.OutputDirectory;
+            var defaultGroup = _settings.ProgramSettings.UsingGroups.First(x => x.Id == _settings.ProgramSettings.DefaultGroupId);
+            var boxingController = _factoryFileBoxingHandler.GetBoxingHandler(tempDirectory);
             GetClearExistingDirectory(tempDirectory);
             var filesCollector = GetPreparedFilesCollector();
             var dataMo = filesCollector.GetFilesForEntities();
-            var boxingController = _factoryFileBoxingHandler.GetBoxingHandler(tempDirectory);
+
             var moWithData = dataMo.Where(x => x.Value.Any()).ToList();
             foreach (var mo in moWithData)
             {
-                var nameArchive = $"Данные реестра {Year} {Month} для {mo.Key}";
+                var nameArchive = _settings.ProgramSettings.BoxAllGroupTypes ? $"Данные реестра {Year} {Month} для {mo.Key}" : FinalDefaultGroupName(mo.Key);
                 boxingController.BoxFiles(mo.Value.ToList(), nameArchive);
             }
 
             var files = tempDirectory.GetFiles();
-            LogCollection.Add(
+            OnLoggingFileCollector(this,
                 $"Выгрузка данных завершена. Количество МО / всего МО - [{moWithData.Count}/{filesCollector.UniqueEntities.Count()}]. Количество архивов - {files.Length}");
             TryMoveFilesToFinalPlace();
 
@@ -131,14 +153,24 @@ namespace FilesBoxing.ViewModel
             {
                 var collector = _factoryFileBoxingHandler.GetFilesCollector();
                 collector.UniqueEntities = CodeMoCollection;
-                collector.FileDirectoryInfo = DirectoryFilesInfo;
+                collector.FileDirectoryInfo = _settings.ProgramSettings.BoxAllGroupTypes ? DirectoryFilesInfo.Where(x => x.IsEnabled) : DirectoryFilesInfo.Where(x => x.IsEnabled && x.IdUsingGroups.Contains(defaultGroup.Id));
+                collector.OnLogging += OnLoggingFileCollector;
                 return collector;
             }
+            void OnLoggingFileCollector(object @object, string text)
+            {
+                AddToLogSafeThread(text);
+            }
+            string FinalDefaultGroupName(string codeMO)
+            {
+                return defaultGroup.FileNameArchive.Replace("![YEAR]!", $"{Year}").Replace("![MONTH]!", $"{Month}").Replace("![CODE_MO]!", codeMO);
+            }
+
             void TryMoveFilesToFinalPlace()
             {
                 if (!outboxDirectory.Exists)
                 {
-                    LogCollection.Add(
+                    AddToLogSafeThread(
                         $"Каталог для финального расположения файлов не существует. Файлы хранятся во временном каталоге [{tempDirectory.FullName}]");
                     return;
                 }
@@ -148,7 +180,7 @@ namespace FilesBoxing.ViewModel
                 {
                     foreach (var file in files)
                         File.Move(file.FullName, Path.Combine(outboxDirectory.FullName, file.Name));
-                    LogCollection.Add("Перемещение файлов завершено");
+                    AddToLogSafeThread("Перемещение файлов завершено");
                 }
             }
         }

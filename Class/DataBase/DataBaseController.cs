@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 
 using FilesBoxing.Interface.DataBase;
 
@@ -22,7 +20,7 @@ namespace FilesBoxing.Class.DataBase
 
             IEnumerable<string> GetCodesMoFomDbAsDataTable()
             {
-                const string sql = "select distinct MCOD from nsi.F032 where 1=1";
+                const string sql = "select distinct f.MCOD from nsi.F032 f where f.oktmo_p like '76000000%' AND SYSDATE BETWEEN f.D_BEGIN_OMS AND COALESCE(f.D_END, F.DATEEND, SYSDATE)";
                 Exception innerException = null;
                 var result = new List<string>();
 
@@ -50,10 +48,6 @@ namespace FilesBoxing.Class.DataBase
                 if (innerException != null)
                     throw new ApplicationException("Ошибка получения данных о МО из базы данных", innerException);
                 return result;
-            }
-            IEnumerable<string> GetCodesMoFromDataTable(DataTable source)
-            {
-                return (from DataRow row in source.Rows select row["MCOD"].ToString()).ToList();
             }
         }
     }

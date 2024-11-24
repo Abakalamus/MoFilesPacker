@@ -19,24 +19,23 @@
         </Grid.ColumnDefinitions>
         <Menu Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Настройки">
-                <MenuItem Header="Обновить данные МО из БД" Command="{Binding UpdateCollectionMoCommand}"/>
-                <MenuItem Header="Сохранить текущие настройки" Command="{Binding SaveSettingsFileCommand}"/>
+                <MenuItem Header="Обновить данные МО из БД" Command="{Binding UpdateCollectionMoCommand}" />
+                <MenuItem Header="Сохранить текущие настройки" Command="{Binding SaveSettingsFileCommand}" />
             </MenuItem>
             <MenuItem Header="Тестирование" Command="{Binding BoxingMoFilesCommand}" />
         </Menu>
-        <DataGrid Grid.Row="1" Grid.Column="0" Style="{StaticResource DataGridMain}" ItemsSource="{Binding CodeMoCollection}" d:ItemsSource="{d:SampleData ItemCount=50}" IsReadOnly="True">
+        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Style="{StaticResource DataGridMain}" ItemsSource="{Binding CodeMoCollection}" d:ItemsSource="{d:SampleData ItemCount=50}" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
         <DataGrid Grid.Row="1" Grid.Column="1" Style="{StaticResource DataGridMain}" ItemsSource="{Binding DirectoryFilesInfo}" d:ItemsSource="{d:SampleData ItemCount=8}">
             <DataGrid.Columns>
-                <DataGridCheckBoxColumn Header="Использовать" Binding="{Binding IsEnabled}" IsThreeState="False" />
+                <DataGridCheckBoxColumn Header="Использовать" Binding="{Binding IsEnabled, Mode=TwoWay, UpdateSourceTrigger = PropertyChanged}" IsThreeState="False" />
                 <DataGridTextColumn Header="Расширение для файла" Binding="{Binding ExtensionFile}" IsReadOnly="True" />
                 <DataGridTextColumn Header="Каталог для файла" Binding="{Binding ParentFileDirectory.FullName}" IsReadOnly="True" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
-
-        <ListBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding LogCollection}" />
+        <ListBox Grid.Row="2" Grid.Column="1" Margin="10,0,10,10" ItemsSource="{Binding LogCollection}" />
     </Grid>
 </Window>

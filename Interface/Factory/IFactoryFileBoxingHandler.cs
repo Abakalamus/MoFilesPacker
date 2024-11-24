@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using FilesBoxing.Interface.BusinessLogic;
 
 namespace FilesBoxing.Interface.Factory
 {
@@ -6,5 +7,6 @@ namespace FilesBoxing.Interface.Factory
     {
         IFileBoxing GetBoxingHandler(DirectoryInfo directoryForArchive);
         IFilesCollector GetFilesCollector();
+        IFilesCollectorNew GetFilesCollectorNew();
     }
 }

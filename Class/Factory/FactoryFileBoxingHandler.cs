@@ -1,5 +1,6 @@
 ﻿using System.IO;
-using FilesBoxing.Interface;
+using FilesBoxing.Class.BusinessLogic;
+using FilesBoxing.Interface.BusinessLogic;
 using FilesBoxing.Interface.Factory;
 
 namespace FilesBoxing.Class.Factory
@@ -14,6 +15,10 @@ namespace FilesBoxing.Class.Factory
         public IFilesCollector GetFilesCollector()
         {
             return new FilesCollector();
+        }
+        public IFilesCollectorNew GetFilesCollectorNew()
+        {
+            return new FilesPatternCollector();
         }
     }
 }
