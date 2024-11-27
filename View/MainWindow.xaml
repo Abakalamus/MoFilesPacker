@@ -1,4 +1,9 @@
-﻿<Window x:Class="FilesBoxing.View.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:FilesBoxing" xmlns:viewModel="clr-namespace:FilesBoxing.ViewModel" mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel}" Title="Группировщик выгрузки данных для МО" WindowState="Maximized" WindowStartupLocation="CenterScreen">
+﻿<Window x:Class="FilesBoxing.View.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:FilesBoxing.Class.Visual.Converter"
+        xmlns:viewModel="clr-namespace:FilesBoxing.ViewModel" mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel}" Title="Группировщик выгрузки данных для МО" MinWidth ="1000"  WindowState="Maximized" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="DataGridMain" TargetType="DataGrid">
             <Setter Property="Margin" Value="10,10,10,20" />
@@ -6,12 +11,14 @@
             <Setter Property="SelectionMode" Value="Single" />
             <Setter Property="SelectionUnit" Value="FullRow" />
         </Style>
+        <converters:EnabledTypeDirectoryConverter x:Key="EnableMultiConverter"/>
+        <converters:HandleResultToColorConverter x:Key="ResultToColorConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="60*" />
-            <RowDefinition Height="40*" />
+            <RowDefinition Height="80*" />
+            <RowDefinition Height="20*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -22,20 +29,54 @@
                 <MenuItem Header="Обновить данные МО из БД" Command="{Binding UpdateCollectionMoCommand}" />
                 <MenuItem Header="Сохранить текущие настройки" Command="{Binding SaveSettingsFileCommand}" />
             </MenuItem>
-            <MenuItem Header="Тестирование" Command="{Binding BoxingMoFilesCommand}" />
+            <MenuItem Header="Тестирование" IsEnabled="False" Command="{Binding BoxingMoFilesCommand}" />
         </Menu>
-        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Style="{StaticResource DataGridMain}" ItemsSource="{Binding CodeMoCollection}" d:ItemsSource="{d:SampleData ItemCount=50}" IsReadOnly="True">
+        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Style="{StaticResource DataGridMain}" ItemsSource="{Binding CodeMoCollection}" IsReadOnly="True" d:ItemsSource="{d:SampleData ItemCount=50}">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource ResultToColorConverter}" UpdateSourceTrigger="PropertyChanged">
+                                <MultiBinding.Bindings>
+                                    <Binding Path=".CountFiles" />
+                                    <Binding Path="IsPackageFileCreated" FallbackValue=""/>
+                                </MultiBinding.Bindings>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding}" Width="*" />
+                <DataGridTextColumn Binding="{Binding CodeMo}" Header="Код МО">
+                </DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding CountFiles}" Header="Кол-во файлов" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid Grid.Row="1" Grid.Column="1" Style="{StaticResource DataGridMain}" ItemsSource="{Binding DirectoryFilesInfo}" d:ItemsSource="{d:SampleData ItemCount=8}">
-            <DataGrid.Columns>
-                <DataGridCheckBoxColumn Header="Использовать" Binding="{Binding IsEnabled, Mode=TwoWay, UpdateSourceTrigger = PropertyChanged}" IsThreeState="False" />
-                <DataGridTextColumn Header="Расширение для файла" Binding="{Binding ExtensionFile}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Каталог для файла" Binding="{Binding ParentFileDirectory.FullName}" IsReadOnly="True" Width="*" />
-            </DataGrid.Columns>
-        </DataGrid>
-        <ListBox Grid.Row="2" Grid.Column="1" Margin="10,0,10,10" ItemsSource="{Binding LogCollection}" />
+        <DockPanel Grid.Row="1" Grid.Column="1" LastChildFill="False">
+            <StackPanel DockPanel.Dock ="Top" Orientation="Horizontal" Margin="10,11,10,0">
+                <Label Content="Год"/>
+                <TextBox Text="{Binding Year, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" Width="32"/>
+                <Label Content="Месяц"/>
+                <TextBox Text="{Binding Month, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" Width="32"/>
+                <Label Content="Вид выгрузки"/>
+                <ComboBox MinWidth="250" ItemsSource="{Binding UsingGroups}" SelectedItem="{Binding SelectedGroup}" DisplayMemberPath="Name" SelectedValuePath="Id" Name="SelectedGroupComboBox"/>
+            </StackPanel>
+            <DataGrid DockPanel.Dock="Top" Style="{StaticResource DataGridMain}" ItemsSource="{Binding DirectoryFilesInfo}" d:ItemsSource="{d:SampleData ItemCount=5}">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Header="Использовать" IsThreeState="False">
+                        <DataGridCheckBoxColumn.Binding>
+                            <MultiBinding Converter="{StaticResource EnableMultiConverter}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged">
+                                <Binding ElementName="SelectedGroupComboBox" Path="SelectedValue" />
+                                <Binding Path="IdUsingGroups" />
+                            </MultiBinding>
+                        </DataGridCheckBoxColumn.Binding>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTextColumn Header="Расширение для файла" Binding="{Binding ExtensionFile}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Каталог для файла" Binding="{Binding ParentFileDirectory.FullName}" IsReadOnly="True" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button DockPanel.Dock="Bottom" Content=" Начать обработку " Command="{Binding BoxingMoFilesCommand}" Margin="10"  HorizontalAlignment="Center" />
+        </DockPanel>
+        <ListBox Grid.Row="2" Grid.Column="1" Margin="10,0,10,20" ItemsSource="{Binding LogCollection}" />
     </Grid>
 </Window>

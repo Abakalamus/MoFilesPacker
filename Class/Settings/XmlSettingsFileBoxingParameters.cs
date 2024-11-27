@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-using FilesBoxing.Interface;
 using FilesBoxing.Interface.BusinessLogic;
 using FilesBoxing.Interface.Settings;
 
@@ -46,8 +45,6 @@ namespace FilesBoxing.Class.Settings
         public List<XmlTypeGroupingSettings> XmlUsingGroups { get; set; }
         [XmlElement(ElementName = "DefaultGroupId")]
         public int DefaultGroupId { get; set; }
-        [XmlElement(ElementName = "BoxAllGroupTypes")]
-        public bool BoxAllGroupTypes { get; set; }
         [XmlIgnore]
         public IEnumerable<string> CodeMoCollection
         {
@@ -87,7 +84,6 @@ namespace FilesBoxing.Class.Settings
             CodeMoCollection = parameters.CodeMoCollection;
             FileDirectoriesInfo = parameters.FileDirectoriesInfo;
             UsingGroups = parameters.UsingGroups;
-            BoxAllGroupTypes = parameters.BoxAllGroupTypes;
         }
 
         public class XmlFileDirectoryInfo : IFileDirectoryInfo
@@ -100,8 +96,8 @@ namespace FilesBoxing.Class.Settings
             }
             [XmlElement(ElementName = "ParentFileDirectory")]
             public string ParentFileDirectoryFullPath;
-            [XmlElement("IsEnabled")]
-            public bool IsEnabled { get; set; }
+            //[XmlElement("IsEnabled")]
+            //public bool IsEnabled { get; set; }
             [XmlElement("ExtensionFile")]
             public string ExtensionFile { get; set; }
             [XmlIgnore]
@@ -117,14 +113,13 @@ namespace FilesBoxing.Class.Settings
             }
             [XmlArray("UsingGroups")]
             [XmlArrayItem("IdGroup")]
-            public List<int> XmlIdUsingGroups { get; set; }          
-            public List<XmlTypeGroupingSettings> XmlUsingGroups { get; set; }
+            public List<int> XmlIdUsingGroups { get; set; }
             public XmlFileDirectoryInfo()
             { }
             public XmlFileDirectoryInfo(IFileDirectoryInfo source)
             {
                 ParentFileDirectory = source.ParentFileDirectory;
-                IsEnabled = source.IsEnabled;
+              //  IsEnabled = source.IsEnabled;
                 ExtensionFile = source.ExtensionFile;
                 IdUsingGroups = source.IdUsingGroups;
             }

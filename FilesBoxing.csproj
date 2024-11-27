@@ -40,11 +40,14 @@
     <Reference Include="LibraryKurguzov">
       <HintPath>Source\LibraryKurguzov.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Oracle.ManagedDataAccess">
       <HintPath>Source\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -71,19 +74,34 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Class\BusinessLogic\EventHandlerParameter\ProcessHandleMoInfo.cs" />
+    <Compile Include="Class\BusinessLogic\EventHandlerParameter\SearchFileMoInfo.cs" />
+    <Compile Include="Class\BusinessLogic\FileNameHelper\AnchorValue.cs" />
+    <Compile Include="Class\BusinessLogic\FileNameHelper\PackageFileNameHelper.cs" />
+    <Compile Include="Class\BusinessLogic\FileNameHelper\NameAnchor.cs" />
     <Compile Include="Class\BusinessLogic\FileBoxing.cs" />
     <Compile Include="Class\BusinessLogic\FileDirectoryInfo.cs" />
-    <Compile Include="Class\BusinessLogic\FilesCollector.cs" />
-    <Compile Include="Class\BusinessLogic\FilesCollectorToBoxingHandler.cs" />
+    <Compile Include="Class\BusinessLogic\FilesCollectorHandlerParameter.cs" />
+    <Compile Include="Class\BusinessLogic\FilesCollectorToPackingHandler.cs" />
     <Compile Include="Class\BusinessLogic\FilesPatternCollector.cs" />
+    <Compile Include="Class\BusinessLogic\EventHandlerHelper.cs" />
     <Compile Include="Class\DataBase\DataBaseController.cs" />
-    <Compile Include="Class\Factory\FactoryFileBoxingHandler.cs" />
     <Compile Include="Class\Factory\FullFileBoxingHandler.cs" />
     <Compile Include="Class\Factory\SettingsHelper.cs" />
+    <Compile Include="Class\Visual\Command\AsyncCommandBase.cs" />
+    <Compile Include="Class\Visual\Command\SimpleAsyncCommand.cs" />
+    <Compile Include="Class\Visual\Converter\EnabledTypeDirectoryConverter.cs" />
+    <Compile Include="Class\Visual\Converter\HandleResultToColorConverter.cs" />
+    <Compile Include="Class\Visual\MoProcessInfo.cs" />
+    <Compile Include="Interface\BusinessLogic\FileNameHelper\IAnchorValue.cs" />
     <Compile Include="Interface\BusinessLogic\IFileBoxing.cs" />
     <Compile Include="Interface\BusinessLogic\IFileDirectoryInfo.cs" />
+    <Compile Include="Interface\BusinessLogic\FileNameHelper\IFileNameHelper.cs" />
     <Compile Include="Interface\BusinessLogic\IFilesCollector.cs" />
-    <Compile Include="Interface\BusinessLogic\IFilesCollectorToBoxingHandler.cs" />
+    <Compile Include="Interface\BusinessLogic\IFilesCollectorHandlerParameter.cs" />
+    <Compile Include="Interface\BusinessLogic\IFilesCollectorToPackingEventHandlerHelper.cs" />
+    <Compile Include="Interface\BusinessLogic\IFilesCollectorToPackingHandler.cs" />
+    <Compile Include="Interface\BusinessLogic\FileNameHelper\INameAnchor.cs" />
     <Compile Include="Interface\DataBase\IDataBaseController.cs" />
     <Compile Include="Interface\Factory\IFullFactoryFileBoxingHandler.cs" />
     <Compile Include="Interface\Settings\ISettingsFileBoxingParameters.cs" />
@@ -93,8 +111,10 @@
     <Compile Include="Class\Settings\SettingsFileBoxing.cs" />
     <Compile Include="Class\Settings\XmlSettingsFileBoxingParameters.cs" />
     <Compile Include="Enum\SourceType.cs" />
-    <Compile Include="Interface\Factory\IFactoryFileBoxingHandler.cs" />
     <Compile Include="Interface\Settings\ISettings.cs" />
+    <Compile Include="Interface\Visual\IAsyncCommand.cs" />
+    <Compile Include="Interface\Visual\IMoProcess.cs" />
+    <Compile Include="Interface\Visual\IMoProcessInfo.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

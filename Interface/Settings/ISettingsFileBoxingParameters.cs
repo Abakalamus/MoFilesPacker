@@ -13,6 +13,5 @@ namespace FilesBoxing.Interface.Settings
         IEnumerable<string> CodeMoCollection { get; set; }
         IEnumerable<ITypeGroupingSettings> UsingGroups { get; }
         IEnumerable<IFileDirectoryInfo> FileDirectoriesInfo { get; set; }
-        bool BoxAllGroupTypes { get; set; }
     }
 }

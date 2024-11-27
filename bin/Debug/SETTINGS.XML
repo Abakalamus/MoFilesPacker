@@ -1,35 +1,69 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SettingsFileBoxing>
-  <ConnectionString>AA</ConnectionString>
-  <TempDirectory>D:\ПО\FilesBoxing\bin\Debug\Temp</TempDirectory>
-  <OutputDirectory>D:\ПО\FilesBoxing\bin\Debug\Output</OutputDirectory>
-  <CodeMoCollection>
-    <CodeMo>750001</CodeMo>
-    <CodeMo>750002</CodeMo>
-	<CodeMo>750004</CodeMo>
-	<CodeMo>750005</CodeMo>
-  </CodeMoCollection>
-  <FileDirectoriesInfo>
-    <FD_Info>
-      <ParentFileDirectory>\\ohome\home\Транзит</ParentFileDirectory>
-      <IsEnabled>true</IsEnabled>
-      <ExtensionFile>.TXT</ExtensionFile>
-    </FD_Info>
-    <FD_Info>
-      <ParentFileDirectory>D:\Разные документы</ParentFileDirectory>
-      <IsEnabled>true</IsEnabled>
-      <ExtensionFile>.TXT</ExtensionFile>
-    </FD_Info>
-    <FD_Info>
-      <ParentFileDirectory>C:\Program Files (x86)\Microsoft Web Tools</ParentFileDirectory>
-      <IsEnabled>true</IsEnabled>
-      <ExtensionFile>.TXT</ExtensionFile>
-    </FD_Info>
-    <FD_Info>
-      <ParentFileDirectory>H:\-=РАЗОБРАТЬ=-\ОИО\!!!! РАЗОБРАТЬ!!!\Батурин</ParentFileDirectory>
-      <IsEnabled>true</IsEnabled>
-      <ExtensionFile>.ZIP</ExtensionFile>
-    </FD_Info>
-  </FileDirectoriesInfo>
-  <FileNameArchive>sdfsfs.ZIP</FileNameArchive>
+	<ConnectionString>AA</ConnectionString>
+	<TempDirectory>Temp</TempDirectory>
+	<OutputDirectory>Output</OutputDirectory>
+	<UsingArchiveGroups>
+		<GroupInfo>
+			<Id>0</Id>
+			<Name>Общая группа</Name>
+			<FileNameArchive>Общие данные за ![YEAR]! ![MONTH]! для ![CODE_MO]!</FileNameArchive>
+		</GroupInfo>
+		<GroupInfo>
+			<Id>1</Id>
+			<Name>Группа 1</Name>
+			<FileNameArchive>Группа 1 за ![YEAR]! ![MONTH]! для ![CODE_MO]!</FileNameArchive>
+		</GroupInfo>
+		<GroupInfo>
+			<Id>2</Id>
+			<Name>Группа 2</Name>
+			<FileNameArchive>Группа 2 за ![YEAR]! ![MONTH]! для ![CODE_MO]!</FileNameArchive>
+		</GroupInfo>
+	</UsingArchiveGroups>
+	<DefaultGroupId>1</DefaultGroupId>
+	<BoxAllGroupTypes>false</BoxAllGroupTypes>
+	<CodeMoCollection>
+		<CodeMo>750001</CodeMo>
+		<CodeMo>750002</CodeMo>
+		<CodeMo>750004</CodeMo>
+		<CodeMo>750005</CodeMo>
+	</CodeMoCollection>
+	<FileDirectoriesInfo>
+		<FD_Info>
+			<ParentFileDirectory>C:\Users\Abakalamus\Desktop\tmpZIP\![YEAR]!\![MONTH]!</ParentFileDirectory>
+			<IsEnabled>true</IsEnabled>
+			<ExtensionFile>.TXT</ExtensionFile>
+			<UsingGroups>
+				<IdGroup>0</IdGroup>
+				<IdGroup>1</IdGroup>
+			</UsingGroups>
+		</FD_Info>
+		<FD_Info>
+			<ParentFileDirectory>C:\Users\Abakalamus\Desktop\Книги\ДД\Дарья Донцова</ParentFileDirectory>
+			<IsEnabled>true</IsEnabled>
+			<ExtensionFile>.FB2</ExtensionFile>
+			<UsingGroups>
+				<IdGroup>0</IdGroup>
+				<IdGroup>2</IdGroup>
+			</UsingGroups>
+		</FD_Info>
+		<FD_Info>
+			<ParentFileDirectory>C:\Users\Abakalamus\Desktop\24_1_1\wsdl</ParentFileDirectory>
+			<IsEnabled>true</IsEnabled>
+			<ExtensionFile>.WSDL</ExtensionFile>
+			<UsingGroups>
+				<IdGroup>0</IdGroup>
+				<IdGroup>3</IdGroup>
+			</UsingGroups>
+		</FD_Info>
+		<FD_Info>
+			<ParentFileDirectory>C:\Users\Abakalamus\Desktop\myPE\MyPE</ParentFileDirectory>
+			<IsEnabled>true</IsEnabled>
+			<ExtensionFile>.PY</ExtensionFile>
+			<UsingGroups>
+				<IdGroup>0</IdGroup>
+				<IdGroup>1</IdGroup>
+			</UsingGroups>
+		</FD_Info>
+	</FileDirectoriesInfo>
 </SettingsFileBoxing>

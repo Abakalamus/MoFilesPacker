@@ -20,7 +20,8 @@ namespace FilesBoxing.Class.BusinessLogic
         {
             var enumerable = files.ToList();
             if (!enumerable.Any())
-                throw new ApplicationException("Нет файлов для упаковки");
+                //throw new ApplicationException("Нет файлов для упаковки");
+                return;
             DirectoryForBoxingFile.Refresh();
             if (!DirectoryForBoxingFile.Exists)
                 throw new ApplicationException("Каталог для файла-архива не существует");
