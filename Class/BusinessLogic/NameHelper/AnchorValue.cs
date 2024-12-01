@@ -1,6 +1,6 @@
-﻿using FilesBoxing.Interface.BusinessLogic.FileNameHelper;
+﻿using FilesBoxing.Interface.BusinessLogic.NameHelper;
 
-namespace FilesBoxing.Class.BusinessLogic.FileNameHelper
+namespace FilesBoxing.Class.BusinessLogic.NameHelper
 {
     public class AnchorValue : IAnchorValue
     {

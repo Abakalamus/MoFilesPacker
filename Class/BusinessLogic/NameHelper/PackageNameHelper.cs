@@ -1,11 +1,11 @@
-﻿using FilesBoxing.Interface.BusinessLogic.FileNameHelper;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
+using FilesBoxing.Interface.BusinessLogic.NameHelper;
 
-namespace FilesBoxing.Class.BusinessLogic.FileNameHelper
+namespace FilesBoxing.Class.BusinessLogic.NameHelper
 {
-    internal class PackageFileNameHelper : IPackageFileNameHelper
+    internal class PackageNameHelper : IPackageNameHelper
     {
         private const string ExceptionNotFoundAnchor = "Коллекция содержит идентификатор якоря, не зарегистрированный в системе";
         private const string ExceptionNotUniqueAnchorId = "Не допускается использование нескольких якорей с одинаковым идентификатором!";
@@ -33,7 +33,7 @@ namespace FilesBoxing.Class.BusinessLogic.FileNameHelper
                 : (IAnchorValue)new AnchorValue(anchorFromCollection.Id, value);
         }
 
-        public PackageFileNameHelper(IEnumerable<INameAnchor> anchorsCollection)
+        public PackageNameHelper(IEnumerable<INameAnchor> anchorsCollection)
         {
             var anchorCollection = anchorsCollection.ToList();
             if (anchorCollection.GroupBy(x => x.Id).Where(x => x.Count() > 1).Select(x => x.Key).Any())

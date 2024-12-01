@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-
-using LibraryKurguzov.Class.Command;
-using System.Windows.Input;
+﻿using FilesBoxing.Interface.BusinessLogic;
+using FilesBoxing.Interface.BusinessLogic.FilesCollector;
+using FilesBoxing.Interface.BusinessLogic.NameHelper;
 using FilesBoxing.Interface.DataBase;
 using FilesBoxing.Interface.Factory;
-using LibraryKurguzov.Class.Utility;
-using System.Windows;
 using FilesBoxing.Interface.Settings;
-using FilesBoxing.Interface.BusinessLogic;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.IO;
 using FilesBoxing.Interface.Visual;
+
+using LibraryKurguzov.Class.Command;
+using LibraryKurguzov.Class.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace FilesBoxing.ViewModel
 {
@@ -22,79 +25,75 @@ namespace FilesBoxing.ViewModel
         private readonly ISettingsFileBoxing _settings;
         private readonly IDataBaseController _dataBaseController;
         private readonly IFullFactoryFileBoxingHandler _factory;
-        private readonly IFileDirectoryInfoUpdater _updater;
+        private readonly INameHelperController _nameHelper;
         private bool _isExecuting;
-        private int _year;
-        private int _month;
-
+        private DateTime _selectedPeriod;
+        private ITypeGroupingSettings _selectedGroup;
+        private const byte CountHandleTasks = 20;
         public ObservableCollection<string> LogCollection { get; set; }
         public ObservableCollection<IMoProcessInfo> CodeMoCollection { get; set; }
         public ObservableCollection<IFileDirectoryInfo> DirectoryFilesInfo { get; set; }
         public ObservableCollection<ITypeGroupingSettings> UsingGroups { get; set; }
-        public ITypeGroupingSettings SelectedGroup { get; set; }
+        public ITypeGroupingSettings SelectedGroup
+        {
+            get => _selectedGroup;
+            set
+            {
+                _selectedGroup = value;
+                OnPropertyChanged();
+            }
+        }
         public bool IsExecuting
         {
             get => _isExecuting;
             set
             {
-                if (value == _isExecuting) return;
                 _isExecuting = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(BoxingMoFilesCommand));
             }
         }
-        public int Year
+        public DateTime SelectedPeriod
         {
-            get => _year;
+            get => _selectedPeriod;
             set
             {
-                if (value == _year) return;
-                _year = value;
-                if (_updater != null)
+                if (value.Date == _selectedPeriod.Date) return;
+                _selectedPeriod = value;
+                if (_nameHelper != null)
                 {
-                    _updater.Year = value;
+                    _nameHelper.UpdateYearMonthInfo(value.Year, value.Month);
                     UpdateDirectoryFilesInfo();
                 }
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(BoxingMoFilesCommand));
             }
         }
-        public int Month
-        {
-            get => _month;
-            set
-            {
-                if (value == _month) return;
-                _month = value;
-                if (_updater != null)
-                {
-                    _updater.Month = value;
-                    UpdateDirectoryFilesInfo();
-                }
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(BoxingMoFilesCommand));
-            }
-        }
-
         private void UpdateDirectoryFilesInfo()
         {
+            if (_nameHelper == null)
+                return;
+            var updatedDirectoryInfoCollection = GetUpdatedDirectoryInfo();
             DirectoryFilesInfo?.Clear();
-            var newInfo = _updater.GetUpdatedByPeriod(_settings.ProgramSettings.FileDirectoriesInfo);
-            DirectoryFilesInfo = new ObservableCollection<IFileDirectoryInfo>(newInfo);
+            DirectoryFilesInfo = new ObservableCollection<IFileDirectoryInfo>(updatedDirectoryInfoCollection);
             OnPropertyChanged(nameof(DirectoryFilesInfo));
-        }
 
+            IEnumerable<IFileDirectoryInfo> GetUpdatedDirectoryInfo()
+            {
+                return _settings.ProgramSettings.FileDirectoriesInfo
+                    .Select(info => _factory.GetNewDirectoryInfo(_nameHelper.GetTransformedValue(info.ParentFileDirectory.FullName), info.ExtensionFile, info.IdUsingGroups))
+                    .ToList();
+            }
+        }
         public MainViewModel(IFullFactoryFileBoxingHandler factory, ISettingsFileBoxing settings)
         {
             _factory = factory;
             _settings = settings;
-            var dateTimeMonthBefore = DateTime.Now.AddMonths(-1);
-            Year = dateTimeMonthBefore.Year;
-            Month = dateTimeMonthBefore.Month;
+            SelectedPeriod = DateTime.Now.AddMonths(-1);
             LogCollection = new ObservableCollection<string>();
             try
             {
-                _settings.ResreshDataFromFile();
+                _settings.RefreshDataFromFile();
             }
             catch (Exception ex)
             {
@@ -102,14 +101,14 @@ namespace FilesBoxing.ViewModel
                 return;
             }
             _dataBaseController = factory.GetDataBaseController(settings.ProgramSettings.ConnectionString);
-            _updater = _factory.GetFileDirectoryInfoUpdater(Year, Month);
-            UpdateDirectoryFilesInfo();
+            _nameHelper = factory.GetNameHelperController(SelectedPeriod.Year, SelectedPeriod.Month);
             CodeMoCollection = new ObservableCollection<IMoProcessInfo>();
             RefreshCodeMoCollection(_settings.ProgramSettings.CodeMoCollection.ToList());
+            DirectoryFilesInfo = new ObservableCollection<IFileDirectoryInfo>(_settings.ProgramSettings.FileDirectoriesInfo);
+            UpdateDirectoryFilesInfo();
             UsingGroups = new ObservableCollection<ITypeGroupingSettings>(_settings.ProgramSettings.UsingGroups);
             SelectedGroup = _settings.ProgramSettings.UsingGroups.First(x => x.Id == _settings.ProgramSettings.DefaultGroupId);
         }
-
         private void RefreshCodeMoCollection(IEnumerable<string> codeMoCollection)
         {
             CodeMoCollection.Clear();
@@ -117,55 +116,138 @@ namespace FilesBoxing.ViewModel
             {
                 CodeMoCollection.Add(_factory.GetNewMoProcessInfo(mo));
             }
+            OnPropertyChanged(nameof(CodeMoCollection));
         }
-
         // ReSharper disable once AsyncVoidLambda
         public ICommand BoxingMoFilesCommand => new RelayCommand(async obj =>
         {
             try
             {
                 IsExecuting = true;
-                // RefreshCodeMoCollection(CodeMoCollection.Select(x=>x.CodeMo).ToList());
-                var filesCollectorToBoxingHandler = GetFilesCollectorToBoxingHandler();
-                await Task.Run(() =>
+                ThrowExceptionIfNotSuitableParameters();
+                var infoGetter = _factory.GetNewUserInfoGetter();
+                await Task.Run(HandlePackagingProcess);
+
+                void ThrowExceptionIfNotSuitableParameters()
                 {
-                    filesCollectorToBoxingHandler.CreatePackageFileForMoFiles(CreateParameterForHandler());
+                    var errors = CheckCollectionsErrors();
+                    if (errors.Any())
+                        AddErrorsToLogWithComment();
+
+                    ICollection<string> CheckCollectionsErrors()
+                    {
+                        var result = new List<string>();
+                        if (CodeMoCollection.All(x => !x.IsSelected))
+                            result.Add("Не выбрана ни одна МО!");
+                        if (!GetDirectoriesForRequireType().Any())
+                            result.Add("Не выбрана ни один каталог для поиска файлов!");
+                        return result;
+                    }
+                    void AddErrorsToLogWithComment()
+                    {
+                        foreach (var error in errors)
+                            AddToLogSafeThread(error);
+                    }
+                }
+                void HandlePackagingProcess()
+                {
+                    RefreshProgressInfoIfNeed();
+                    var directoryOutput = infoGetter.GetDirectoryOutputPathByUserChoise(_settings.ProgramSettings.OutputDirectory.FullName);
+                    if (!ChosenOutputDirectoryCorrect())
+                        return;
+                    var packagedFiles = GetPackagedMoFiles();
+                    ThrowExceptionIfNotExistsAnyCreatedPackagedFiles();
                     AddToLogSafeThread("Файлы архивов для МО созданы!");
                     if (!CheckOutputPathExist())
                     {
-                        AddToLogSafeThread($"Каталог для перемещения файлов не найден [{_settings.ProgramSettings.TempDirectory.Name}]. Файлы остались в каталоге Temp [{_settings.ProgramSettings.TempDirectory.FullName}]!");
+                        AddToLogSafeThread(
+                            $"Каталог для перемещения файлов не найден [{_settings.ProgramSettings.TempDirectory.Name}]. Файлы остались в каталоге Temp [{_settings.ProgramSettings.TempDirectory.FullName}]!");
                         return;
                     }
-                    MovePackedFilesToOutboxDirectory(filesCollectorToBoxingHandler.SaveFilesDirectory.GetFiles());
-                });
-                AddToLogSafeThread("Перемещение файлов завершено");
+                    MovePackedFilesToOutboxDirectory(packagedFiles);
+                    AddToLogSafeThread("Перемещение файлов завершено");
+                    if (NeedShowResult())
+                        OpenPathInExplorer(directoryOutput);
 
-                IEnumerable<IFileDirectoryInfo> GetDirectoriesForRequireType()
-                {
-                    return DirectoryFilesInfo.Where(x => x.IdUsingGroups.Contains(SelectedGroup.Id));//x.IsEnabled &&
-                }
-                IFilesCollectorToPackingHandler GetFilesCollectorToBoxingHandler()
-                {
-                    var handler = _factory.GetFilesCollectorToBoxingHandler(_settings.ProgramSettings.TempDirectory.FullName);
-                    handler.OnFilesSearchComplite += OnFilesSearchComplite;
-                    handler.OnMoPackingComplite += OnMoPackingComplite;
-                    return handler;
-                }
-                IFilesCollectorHandlerParameter CreateParameterForHandler()
-                {
-                    return _factory.CreateFilesCollectorHandlerParameter(Year, Month, CodeMoCollection.Select(x => x.CodeMo), GetDirectoriesForRequireType(), SelectedGroup.FileNameArchive);
-                }
-
-                bool CheckOutputPathExist()
-                {
-                    return _settings.ProgramSettings.OutputDirectory.Exists;
-                }
-                void MovePackedFilesToOutboxDirectory(IEnumerable<FileInfo> files)
-                {
-                    foreach (var file in files)
+                    void RefreshProgressInfoIfNeed()
                     {
-                        var newPath = Path.Combine(_settings.ProgramSettings.OutputDirectory.FullName, file.Name);
-                        File.Move(file.FullName, newPath);
+                        if (CodeMoCollection.All(x => x.IsPackageFileCreated == null && x.CountFiles == null)) return;
+                        foreach (var mo in CodeMoCollection)
+                        {
+                            mo.IsPackageFileCreated = null;
+                            mo.CountFiles = null;
+                        }
+                        OnPropertyChanged(nameof(CodeMoCollection));
+                    }
+                    bool ChosenOutputDirectoryCorrect()
+                    {
+                        return !string.IsNullOrEmpty(directoryOutput) && IsDirectoryExists(directoryOutput);
+                    }
+                    bool IsDirectoryExists(string path)
+                    {
+                        return Directory.Exists(path);
+                    }
+                    ICollection<FileInfo> GetPackagedMoFiles()
+                    {
+                        var selectedGroupNameArchive = _selectedGroup.FileNameArchive;
+                        var filesCollectorToBoxingHandler = GetFilesCollectorToBoxingHandler();
+                        //filesCollectorToBoxingHandler.CreatePackageFilesForMoFiles(CreateParameterForHandler());
+                        var collectionMoWithArchiveName = GetCodeMoColection().Select(codeMo =>
+                            _factory.GetNewMoWithName(codeMo, _nameHelper.GetTransformedValueForMo(selectedGroupNameArchive, codeMo))).ToList();
+                        filesCollectorToBoxingHandler.CreatePackageFileForMoFiles(collectionMoWithArchiveName, CountHandleTasks);
+                        return filesCollectorToBoxingHandler.SaveDirectory.GetFiles().ToList();
+
+                        IFilesCollectorToPackingHandler GetFilesCollectorToBoxingHandler()
+                        {
+                            var handler = _factory.GetFilesCollectorToBoxingHandler(_settings.ProgramSettings.TempDirectory.FullName);
+                            handler.OnFilesSearchComplite += OnFilesSearchComplite;
+                            handler.OnMoPackingComplite += OnMoPackingComplite;
+                            handler.DirectoryInfoCollection = GetDirectoriesForRequireType();
+                            return handler;
+                        }
+                        IEnumerable<string> GetCodeMoColection()
+                        {
+                            return CodeMoCollection.Where(x => x.IsSelected).Select(x => x.CodeMo);
+                        }
+                    }
+                    void ThrowExceptionIfNotExistsAnyCreatedPackagedFiles()
+                    {
+                        if (!packagedFiles.Any())
+                            throw new ApplicationException("Не было создано ни одного архива! Проверьте настройки программы и существование файлов!");
+                    }
+                    bool CheckOutputPathExist()
+                    {
+                        return Directory.Exists(directoryOutput);
+                    }
+                    void MovePackedFilesToOutboxDirectory(IEnumerable<FileInfo> files)
+                    {
+                        foreach (var file in files)
+                        {
+                            var newPath = Path.Combine(directoryOutput, file.Name);
+                            File.Move(file.FullName, newPath);
+                        }
+                    }
+                    bool NeedShowResult()
+                    {
+                        return CreatedAnyPackages() && !IsOutputFolderDefault() &&
+                               IsDirectoryExists(directoryOutput) && UserWantSeeFolder();
+
+                        bool CreatedAnyPackages()
+                        {
+                            return CodeMoCollection.Any(x => x.IsPackageFileCreated == true);
+                        }
+                        bool IsOutputFolderDefault()
+                        {
+                            return directoryOutput == _settings.ProgramSettings.OutputDirectory.FullName;
+                        }
+                        bool UserWantSeeFolder()
+                        {
+                            return infoGetter.IsUserWantOpenInExplorerPath(directoryOutput);
+                        }
+                    }
+                    void OpenPathInExplorer(string filePath)
+                    {
+                        Process.Start(filePath);
                     }
                 }
             }
@@ -179,28 +261,44 @@ namespace FilesBoxing.ViewModel
                 IsExecuting = false;
             }
         }, canExecute => !IsExecuting);
-
+        private ICollection<IFileDirectoryInfo> GetDirectoriesForRequireType()
+        {
+            return DirectoryFilesInfo.Where(x => x.IdUsingGroups.Contains(SelectedGroup.Id)).ToList();
+        }
         private void OnFilesSearchComplite(object sender, ISearchFileMoInfo searchFileMoInfo)
         {
             var mo = GetMoFromCollection(searchFileMoInfo.CodeMo);
             mo.CountFiles = searchFileMoInfo.CountFiles;
         }
-        private IMoProcessInfo GetMoFromCollection(string codeMo)
-        {
-            return CodeMoCollection.First(x => x.CodeMo == codeMo);
-        }
         private void OnMoPackingComplite(object sender, IProcessHandleMoInfo processInfo)
         {
             var mo = GetMoFromCollection(processInfo.CodeMo);
             mo.IsPackageFileCreated = processInfo.IsPackageFileCreated;
+            OnPropertyChanged(nameof(CodeMoCollection));
+        }
+        private IMoProcessInfo GetMoFromCollection(string codeMo)
+        {
+            return CodeMoCollection.First(x => x.CodeMo == codeMo);
         }
         private void AddToLogSafeThread(string text)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 LogCollection.Add(text);
             });
         }
+
+        public ICommand OnOffCheckingMOCommand => new RelayCommand(obj =>
+        {
+            SetNewStatusForAllMo(!CodeMoCollection.Any(x => x.IsSelected));
+            OnPropertyChanged(nameof(CodeMoCollection));
+
+            void SetNewStatusForAllMo(bool newStatus)
+            {
+                foreach (var mo in CodeMoCollection)
+                    mo.IsSelected = newStatus;
+            }
+        }, canExecute => !IsExecuting);
         public ICommand UpdateCollectionMoCommand => new RelayCommand(obj =>
         {
             try
@@ -233,63 +331,5 @@ namespace FilesBoxing.ViewModel
                 AddToLogSafeThread("Сохранение данных настроек завершено");
             }
         });
-        //private void BoxMoFilesIntoSingleFile()
-        //{
-
-        //    var tempDirectory = _settings.ProgramSettings.TempDirectory;
-        //    var outboxDirectory = _settings.ProgramSettings.OutputDirectory;
-        //    var defaultGroup = _settings.ProgramSettings.UsingGroups.First(x => x.Id == _settings.ProgramSettings.DefaultGroupId);
-        //    var boxingController = _factoryFileBoxingHandler.GetBoxingHandler(tempDirectory);
-        //    GetClearExistingDirectory(tempDirectory);
-        //    var filesCollector = GetPreparedFilesCollector();
-        //    var dataMo = filesCollector.GetFilesForEntities();
-
-        //    var moWithData = dataMo.Where(x => x.Value.Any()).ToList();
-        //    foreach (var mo in moWithData)
-        //    {
-        //        var nameArchive = _settings.ProgramSettings.BoxAllGroupTypes ? $"Данные реестра {Year} {Month} для {mo.Key}" : FinalDefaultGroupName(mo.Key);
-        //        boxingController.BoxFiles(mo.Value.ToList(), nameArchive);
-        //    }
-
-        //    var files = tempDirectory.GetFiles();
-        //    OnLoggingFileCollector(this,
-        //        $"Выгрузка данных завершена. Количество МО / всего МО - [{moWithData.Count}/{filesCollector.UniqueEntities.Count()}]. Количество архивов - {files.Length}");
-        //    TryMoveFilesToFinalPlace();
-
-        //    void GetClearExistingDirectory(DirectoryInfo directory)
-        //    {
-        //        if (directory.Exists)
-        //            directory.Delete(true);
-        //        directory.Create();
-        //    }
-        //    IFilesCollector GetPreparedFilesCollector()
-        //    {
-        //        var collector = _factoryFileBoxingHandler.GetFilesCollector();
-        //        collector.UniqueEntities = CodeMoCollection;
-        //        collector.FileDirectoryInfo = _settings.ProgramSettings.BoxAllGroupTypes ? DirectoryFilesInfo.Where(x => x.IsEnabled) : DirectoryFilesInfo.Where(x => x.IsEnabled && x.IdUsingGroups.Contains(defaultGroup.Id));
-        //        collector.OnLogging += OnLoggingFileCollector;
-        //        return collector;
-        //    }
-        //    void OnLoggingFileCollector(object @object, string text)
-        //    {
-        //        AddToLogSafeThread(text);
-        //    }
-        //    string FinalDefaultGroupName(string codeMO)
-        //    {
-        //        return defaultGroup.FileNameArchive.Replace("![YEAR]!", $"{Year}").Replace("![MONTH]!", $"{Month}").Replace("![CODE_MO]!", codeMO);
-        //    }
-
-        //    void TryMoveFilesToFinalPlace()
-        //    {
-        //        if (!outboxDirectory.Exists)
-        //        {
-        //            AddToLogSafeThread(
-        //                $"Каталог для финального расположения файлов не существует. Файлы хранятся во временном каталоге [{tempDirectory.FullName}]");
-        //            return;
-        //        }
-        //        MovingFilesToFinalPlace();
-
-        //    }
-        //}
     }
 }

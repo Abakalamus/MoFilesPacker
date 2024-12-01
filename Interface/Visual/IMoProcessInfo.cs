@@ -2,5 +2,6 @@
 {
     public interface IMoProcessInfo : ISearchFileMoInfo, IPackageCreatedInfo
     {
+        bool IsSelected { get; set; }
     }
 }

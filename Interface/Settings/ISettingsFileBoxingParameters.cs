@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using FilesBoxing.Interface.BusinessLogic;
+
+using System.Collections.Generic;
 using System.IO;
-using FilesBoxing.Interface.BusinessLogic;
 
 namespace FilesBoxing.Interface.Settings
 {
@@ -12,6 +13,6 @@ namespace FilesBoxing.Interface.Settings
         int DefaultGroupId { get; }
         IEnumerable<string> CodeMoCollection { get; set; }
         IEnumerable<ITypeGroupingSettings> UsingGroups { get; }
-        IEnumerable<IFileDirectoryInfo> FileDirectoriesInfo { get; set; }
+        IEnumerable<IFileDirectoryInfo> FileDirectoriesInfo { get; }
     }
 }

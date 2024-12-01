@@ -9,6 +9,7 @@ namespace FilesBoxing.Class.Visual
         private string _codeMo;
         private byte? _countFiles;
         private bool? _isPackageFileCreated;
+        private bool _isSelected;
 
         public string CodeMo
         {
@@ -42,11 +43,23 @@ namespace FilesBoxing.Class.Visual
             }
         }
 
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (value == _isSelected) return;
+                _isSelected = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MoProcessInfo(string codeMo)
         {
             CodeMo = codeMo;
             CountFiles = null;
-            IsPackageFileCreated = false;
+            IsPackageFileCreated = null;
+            IsSelected = true;
         }
     }
 }

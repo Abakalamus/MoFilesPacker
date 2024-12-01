@@ -1,8 +1,8 @@
 ﻿using FilesBoxing.Class.BusinessLogic.EventHandlerParameter;
-using FilesBoxing.Interface.BusinessLogic;
+using FilesBoxing.Interface.BusinessLogic.FilesCollector;
 using FilesBoxing.Interface.Visual;
 
-namespace FilesBoxing.Class.BusinessLogic
+namespace FilesBoxing.Class.BusinessLogic.FilesCollector
 {
     public class EventHandlerHelper : IFilesCollectorToPackingEventHandlerHelper
     {

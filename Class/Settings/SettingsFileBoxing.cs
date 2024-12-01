@@ -15,7 +15,7 @@ namespace FilesBoxing.Class.Settings
             FilePathSettings = filePath;
             _xmlFullSerializator = xmlFullSerializator;
         }
-        public void ResreshDataFromFile()
+        public void RefreshDataFromFile()
         {
             ProgramSettings = _xmlFullSerializator.DeserializeFromFile(FilePathSettings);
         }

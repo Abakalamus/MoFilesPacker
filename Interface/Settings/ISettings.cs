@@ -3,7 +3,7 @@
     public interface IFileSettings
     {
         string FilePathSettings { get; }
-        void ResreshDataFromFile();
+        void RefreshDataFromFile();
         void SaveCurrentSettingToFile();
     }
     public interface ISettingsFileBoxing : IFileSettings

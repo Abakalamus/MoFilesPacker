@@ -1,14 +1,16 @@
-﻿using System;
+﻿using FilesBoxing.Interface.BusinessLogic;
+using FilesBoxing.Interface.BusinessLogic.FilesCollector;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using FilesBoxing.Interface.BusinessLogic;
 
-namespace FilesBoxing.Class.BusinessLogic
+namespace FilesBoxing.Class.BusinessLogic.FilesCollector
 {
     internal class FilesPatternCollector : IFilesCollector
     {
         private List<IFileDirectoryInfo> _fileDirectoryInfo;
-        public IEnumerable<IFileDirectoryInfo> FileDirectoryInfo
+        public ICollection<IFileDirectoryInfo> FileDirectoryInfo
         {
             get => _fileDirectoryInfo;
             set
@@ -19,7 +21,7 @@ namespace FilesBoxing.Class.BusinessLogic
                 _fileDirectoryInfo = new List<IFileDirectoryInfo>(value);//.Where(x => x.IsEnabled)
             }
         }
-        public IEnumerable<string> GetFilesForPattern(string pattern)
+        public ICollection<string> GetFilesForPattern(string pattern)
         {
             var collectionFiles = new List<string>();
             foreach (var info in FileDirectoryInfo)

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace FilesBoxing.Interface.BusinessLogic.FileNameHelper
+namespace FilesBoxing.Interface.BusinessLogic.NameHelper
 {
-    public interface IFileNameHelper
+    public interface INameHelper
     {
         IEnumerable<INameAnchor> AnchorCollection { get; }
         IAnchorValue GetAsAnchorValue(int id, string value);
@@ -10,7 +10,7 @@ namespace FilesBoxing.Interface.BusinessLogic.FileNameHelper
         string GetTransformedValue(string source, ICollection<IAnchorValue> anchorValues);
     }
 
-    public interface IPackageFileNameHelper : IFileNameHelper
+    public interface IPackageNameHelper : INameHelper
     {
         string GetPackageFileDefaultName();
     }

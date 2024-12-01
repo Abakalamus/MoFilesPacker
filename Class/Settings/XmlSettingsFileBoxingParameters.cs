@@ -24,7 +24,6 @@ namespace FilesBoxing.Class.Settings
             get => new DirectoryInfo(OutputDirectoryFullPath);
             set => OutputDirectoryFullPath = value.FullName;
         }
-
         [XmlElement(ElementName = "TempDirectory")]
         public string TempDirectoryFullPath { get; set; }
         [XmlElement(ElementName = "OutputDirectory")]
@@ -46,6 +45,20 @@ namespace FilesBoxing.Class.Settings
         [XmlElement(ElementName = "DefaultGroupId")]
         public int DefaultGroupId { get; set; }
         [XmlIgnore]
+        public IEnumerable<IFileDirectoryInfo> FileDirectoriesInfo
+        {
+            get => XmlFileDirectoriesInfo;
+            set
+            {
+                if (value == null)
+                    return;
+                XmlFileDirectoriesInfo = new List<XmlFileDirectoryInfo>(value.Select(x=> new XmlFileDirectoryInfo(x)));
+            }
+        }
+        [XmlArray("FileDirectoriesInfo")]
+        [XmlArrayItem("FD_Info", Type = typeof(XmlFileDirectoryInfo))]
+        public List<XmlFileDirectoryInfo> XmlFileDirectoriesInfo { get; set; }
+        [XmlIgnore]
         public IEnumerable<string> CodeMoCollection
         {
             get => XmlCodeMoCollection;
@@ -59,21 +72,6 @@ namespace FilesBoxing.Class.Settings
         [XmlArray("CodeMoCollection")]
         [XmlArrayItem("CodeMo")]
         public List<string> XmlCodeMoCollection { get; set; }
-        [XmlIgnore]
-        public IEnumerable<IFileDirectoryInfo> FileDirectoriesInfo
-        {
-            get => XmlFileDirectoriesInfo;
-            set
-            {
-                if (value == null)
-                    return;
-                XmlFileDirectoriesInfo = new List<XmlFileDirectoryInfo>(value.Select(x=> new XmlFileDirectoryInfo(x)));
-            }
-        }
-
-        [XmlArray("FileDirectoriesInfo")]
-        [XmlArrayItem("FD_Info", Type = typeof(XmlFileDirectoryInfo))]
-        public List<XmlFileDirectoryInfo> XmlFileDirectoriesInfo { get; set; }
 
         public XmlSettingsFileBoxingParameters(){}
         public XmlSettingsFileBoxingParameters(ISettingsFileBoxingParameters parameters)

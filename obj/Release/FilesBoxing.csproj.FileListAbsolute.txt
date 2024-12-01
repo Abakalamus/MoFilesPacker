@@ -36,3 +36,4 @@ D:\ПО\FilesBoxing\obj\Release\FilesBoxing.Properties.Resources.resources
 D:\ПО\FilesBoxing\obj\Release\FilesBoxing.csproj.GenerateResource.cache
 D:\ПО\FilesBoxing\obj\Release\FilesBoxing.csproj.CoreCompileInputs.cache
 D:\ПО\FilesBoxing\obj\Release\FilesBox.5BE6DA28.Up2Date
+D:\ПО\FilesBoxing\obj\Release\GeneratedInternalTypeHelper.g.cs

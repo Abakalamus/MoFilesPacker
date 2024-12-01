@@ -2,8 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:visual="clr-namespace:FilesBoxing.Class.Visual"
         xmlns:converters="clr-namespace:FilesBoxing.Class.Visual.Converter"
-        xmlns:viewModel="clr-namespace:FilesBoxing.ViewModel" mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel}" Title="Группировщик выгрузки данных для МО" MinWidth ="1000"  WindowState="Maximized" WindowStartupLocation="CenterScreen">
+        xmlns:viewModel="clr-namespace:FilesBoxing.ViewModel" mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel}" Title="Группировщик выгрузки данных для МО" MinWidth ="800" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="DataGridMain" TargetType="DataGrid">
             <Setter Property="Margin" Value="10,10,10,20" />
@@ -13,54 +14,57 @@
         </Style>
         <converters:EnabledTypeDirectoryConverter x:Key="EnableMultiConverter"/>
         <converters:HandleResultToColorConverter x:Key="ResultToColorConverter"/>
+        <converters:CollectionMoReadyCountConverter x:Key="ReadyCountConverter"/>
+        <converters:CollectionMoProgressStringConverter  x:Key="ReadyStringConverter"/>
+        <converters:ProgressInfoVisibilityConverter x:Key="ProgressInfoVisibilyConverter"/>
+        <converters:OnOffCommandNameConverter x:Key="NameOnOffButtonConverter"/>
+        <converters:CollectionMoSelectedCountConverter x:Key="SelectedMoCountConverter"/>
     </Window.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="80*" />
-            <RowDefinition Height="20*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="10*" />
-        </Grid.ColumnDefinitions>
-        <Menu Grid.Row="0" Grid.ColumnSpan="2">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
             <MenuItem Header="Настройки">
                 <MenuItem Header="Обновить данные МО из БД" Command="{Binding UpdateCollectionMoCommand}" />
                 <MenuItem Header="Сохранить текущие настройки" Command="{Binding SaveSettingsFileCommand}" />
             </MenuItem>
-            <MenuItem Header="Тестирование" IsEnabled="False" Command="{Binding BoxingMoFilesCommand}" />
         </Menu>
-        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Style="{StaticResource DataGridMain}" ItemsSource="{Binding CodeMoCollection}" IsReadOnly="True" d:ItemsSource="{d:SampleData ItemCount=50}">
-            <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
-                    <Setter Property="Background">
-                        <Setter.Value>
-                            <MultiBinding Converter="{StaticResource ResultToColorConverter}" UpdateSourceTrigger="PropertyChanged">
-                                <MultiBinding.Bindings>
-                                    <Binding Path=".CountFiles" />
-                                    <Binding Path="IsPackageFileCreated" FallbackValue=""/>
-                                </MultiBinding.Bindings>
-                            </MultiBinding>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </DataGrid.RowStyle>
-            <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding CodeMo}" Header="Код МО">
-                </DataGridTextColumn>
-                <DataGridTextColumn Binding="{Binding CountFiles}" Header="Кол-во файлов" Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
-        <DockPanel Grid.Row="1" Grid.Column="1" LastChildFill="False">
-            <StackPanel DockPanel.Dock ="Top" Orientation="Horizontal" Margin="10,11,10,0">
-                <Label Content="Год"/>
-                <TextBox Text="{Binding Year, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" Width="32"/>
-                <Label Content="Месяц"/>
-                <TextBox Text="{Binding Month, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" Width="32"/>
-                <Label Content="Вид выгрузки"/>
-                <ComboBox MinWidth="250" ItemsSource="{Binding UsingGroups}" SelectedItem="{Binding SelectedGroup}" DisplayMemberPath="Name" SelectedValuePath="Id" Name="SelectedGroupComboBox"/>
+        <StackPanel DockPanel.Dock="Left" Orientation="Vertical">
+            <Button Content="{Binding CodeMoCollection, Converter={StaticResource NameOnOffButtonConverter}}" Command="{Binding OnOffCheckingMOCommand}" Height="25" Margin="10,5,10, 0"/>
+            <DataGrid  Width="190" Style="{StaticResource DataGridMain}" ItemsSource="{Binding CodeMoCollection}" d:ItemsSource="{d:SampleData ItemCount=50}">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource ResultToColorConverter}" UpdateSourceTrigger="PropertyChanged">
+                                    <MultiBinding.Bindings>
+                                        <Binding Path="CountFiles" />
+                                        <Binding Path="IsPackageFileCreated" FallbackValue=""/>
+                                    </MultiBinding.Bindings>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Binding="{Binding IsSelected}" Header="Исп"/>
+                    <DataGridTextColumn Binding="{Binding CodeMo}" IsReadOnly="True" Header="Код МО">
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Binding="{Binding CountFiles}" IsReadOnly="True" Header="Кол-во файлов" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10,0,10,0">
+                <Button Content=" Начать выгрузку " Command="{Binding BoxingMoFilesCommand}" Height="25" Margin="0,5,0,5"/>
+                <Label Content="Отчетный период" VerticalAlignment="Center"/>
+                <DatePicker visual:DatePickerCalendar.IsMonthYear="True" visual:DatePickerDateFormat.DateFormat="MM.yyyy" SelectedDate="{Binding SelectedPeriod}" VerticalAlignment="Center"/>
+                <Label Content="Вид выгрузки" VerticalAlignment="Center"/>
+                <ComboBox MinWidth="250" ItemsSource="{Binding UsingGroups}" SelectedItem="{Binding SelectedGroup}" DisplayMemberPath="Name" SelectedValuePath="Id" Name="SelectedGroupComboBox" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding SelectedGroup.FileNameArchive}" MinWidth="200" VerticalAlignment="Center" Margin="10,0,0,0"/>
             </StackPanel>
+            <Grid DockPanel.Dock="Top">
+                <ProgressBar DockPanel.Dock="Top" Margin="10,11,10,0" Height="30"  Value="{Binding CodeMoCollection, Converter={StaticResource ReadyCountConverter}}" Maximum="{Binding CodeMoCollection, Converter={StaticResource SelectedMoCountConverter}}"></ProgressBar>
+                <Label DockPanel.Dock="Top" Content="{Binding CodeMoCollection, Converter={StaticResource ReadyStringConverter}}" Visibility="{Binding IsExecuting, Converter={StaticResource ProgressInfoVisibilyConverter}}" Margin="10,11,10,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
             <DataGrid DockPanel.Dock="Top" Style="{StaticResource DataGridMain}" ItemsSource="{Binding DirectoryFilesInfo}" d:ItemsSource="{d:SampleData ItemCount=5}">
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn Header="Использовать" IsThreeState="False">
@@ -75,8 +79,7 @@
                     <DataGridTextColumn Header="Каталог для файла" Binding="{Binding ParentFileDirectory.FullName}" IsReadOnly="True" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
-            <Button DockPanel.Dock="Bottom" Content=" Начать обработку " Command="{Binding BoxingMoFilesCommand}" Margin="10"  HorizontalAlignment="Center" />
+            <ListBox DockPanel.Dock="Top" Margin="10,0,10,20" ItemsSource="{Binding LogCollection}" />
         </DockPanel>
-        <ListBox Grid.Row="2" Grid.Column="1" Margin="10,0,10,20" ItemsSource="{Binding LogCollection}" />
-    </Grid>
+    </DockPanel>
 </Window>

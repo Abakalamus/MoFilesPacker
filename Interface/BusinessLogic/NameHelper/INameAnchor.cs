@@ -1,4 +1,4 @@
-﻿namespace FilesBoxing.Interface.BusinessLogic.FileNameHelper
+﻿namespace FilesBoxing.Interface.BusinessLogic.NameHelper
 {
     public interface INameAnchor
     {

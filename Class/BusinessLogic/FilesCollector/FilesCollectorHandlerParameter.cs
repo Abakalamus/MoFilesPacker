@@ -1,7 +1,9 @@
 ﻿using FilesBoxing.Interface.BusinessLogic;
+using FilesBoxing.Interface.BusinessLogic.FilesCollector;
+
 using System.Collections.Generic;
 
-namespace FilesBoxing.Class.BusinessLogic
+namespace FilesBoxing.Class.BusinessLogic.FilesCollector
 {
     internal class FilesCollectorHandlerParameter : IFilesCollectorHandlerParameter
     {

@@ -1,7 +1,6 @@
 ﻿using FilesBoxing.Interface.Visual;
-using System;
 
-namespace FilesBoxing.Interface.BusinessLogic
+namespace FilesBoxing.Interface.BusinessLogic.FilesCollector
 {
     public interface IFilesCollectorToPackingEventHandlerHelper
     {

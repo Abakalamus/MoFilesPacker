@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>programm.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DotNetZip">
       <HintPath>Source\DotNetZip.dll</HintPath>
@@ -76,32 +79,45 @@
     </Compile>
     <Compile Include="Class\BusinessLogic\EventHandlerParameter\ProcessHandleMoInfo.cs" />
     <Compile Include="Class\BusinessLogic\EventHandlerParameter\SearchFileMoInfo.cs" />
-    <Compile Include="Class\BusinessLogic\FileNameHelper\AnchorValue.cs" />
-    <Compile Include="Class\BusinessLogic\FileNameHelper\PackageFileNameHelper.cs" />
-    <Compile Include="Class\BusinessLogic\FileNameHelper\NameAnchor.cs" />
+    <Compile Include="Class\BusinessLogic\FilesCollector\EventHandlerHelper.cs" />
+    <Compile Include="Class\BusinessLogic\FilesCollector\FilesCollectorHandlerParameter.cs" />
+    <Compile Include="Class\BusinessLogic\FilesCollector\FilesCollectorToPackingHandler.cs" />
+    <Compile Include="Class\BusinessLogic\FilesCollector\FilesPatternCollector.cs" />
+    <Compile Include="Class\BusinessLogic\MoWithName.cs" />
+    <Compile Include="Class\BusinessLogic\NameHelper\AnchorValue.cs" />
+    <Compile Include="Class\BusinessLogic\NameHelper\PackageNameHelper.cs" />
+    <Compile Include="Class\BusinessLogic\NameHelper\NameAnchor.cs" />
     <Compile Include="Class\BusinessLogic\FileBoxing.cs" />
     <Compile Include="Class\BusinessLogic\FileDirectoryInfo.cs" />
-    <Compile Include="Class\BusinessLogic\FilesCollectorHandlerParameter.cs" />
-    <Compile Include="Class\BusinessLogic\FilesCollectorToPackingHandler.cs" />
-    <Compile Include="Class\BusinessLogic\FilesPatternCollector.cs" />
-    <Compile Include="Class\BusinessLogic\EventHandlerHelper.cs" />
+    <Compile Include="Class\BusinessLogic\NameHelper\NameHelperController.cs" />
+    <Compile Include="Class\BusinessLogic\UserInfoGetter.cs" />
     <Compile Include="Class\DataBase\DataBaseController.cs" />
     <Compile Include="Class\Factory\FullFileBoxingHandler.cs" />
     <Compile Include="Class\Factory\SettingsHelper.cs" />
     <Compile Include="Class\Visual\Command\AsyncCommandBase.cs" />
     <Compile Include="Class\Visual\Command\SimpleAsyncCommand.cs" />
+    <Compile Include="Class\Visual\Converter\CollectionMoProgressStringConverter.cs" />
+    <Compile Include="Class\Visual\Converter\CollectionMoReadyCountConverter.cs" />
+    <Compile Include="Class\Visual\Converter\CollectionMoSelectedCountConverter.cs" />
     <Compile Include="Class\Visual\Converter\EnabledTypeDirectoryConverter.cs" />
     <Compile Include="Class\Visual\Converter\HandleResultToColorConverter.cs" />
+    <Compile Include="Class\Visual\Converter\OnOffCommandNameConverter.cs" />
+    <Compile Include="Class\Visual\Converter\ProgressInfoVisibilityConverter.cs" />
+    <Compile Include="Class\Visual\DatePickerCalendar.cs" />
+    <Compile Include="Class\Visual\DatePickerDateFormat.cs" />
     <Compile Include="Class\Visual\MoProcessInfo.cs" />
-    <Compile Include="Interface\BusinessLogic\FileNameHelper\IAnchorValue.cs" />
+    <Compile Include="Interface\BusinessLogic\FilesCollector\IFilesCollector.cs" />
+    <Compile Include="Interface\BusinessLogic\FilesCollector\IFilesCollectorHandlerParameter.cs" />
+    <Compile Include="Interface\BusinessLogic\FilesCollector\IFilesCollectorToPackingEventHandlerHelper.cs" />
+    <Compile Include="Interface\BusinessLogic\FilesCollector\IFilesCollectorToPackingHandler.cs" />
+    <Compile Include="Interface\BusinessLogic\IMoWithName.cs" />
+    <Compile Include="Interface\BusinessLogic\IUserInfoGetter.cs" />
+    <Compile Include="Interface\BusinessLogic\NameHelper\IAnchorValue.cs" />
+    <Compile Include="Interface\BusinessLogic\NameHelper\INameHelperController.cs" />
     <Compile Include="Interface\BusinessLogic\IFileBoxing.cs" />
     <Compile Include="Interface\BusinessLogic\IFileDirectoryInfo.cs" />
-    <Compile Include="Interface\BusinessLogic\FileNameHelper\IFileNameHelper.cs" />
-    <Compile Include="Interface\BusinessLogic\IFilesCollector.cs" />
-    <Compile Include="Interface\BusinessLogic\IFilesCollectorHandlerParameter.cs" />
-    <Compile Include="Interface\BusinessLogic\IFilesCollectorToPackingEventHandlerHelper.cs" />
-    <Compile Include="Interface\BusinessLogic\IFilesCollectorToPackingHandler.cs" />
-    <Compile Include="Interface\BusinessLogic\FileNameHelper\INameAnchor.cs" />
+    <Compile Include="Interface\BusinessLogic\NameHelper\INameHelper.cs" />
+    <Compile Include="Interface\BusinessLogic\NameHelper\INameAnchor.cs" />
     <Compile Include="Interface\DataBase\IDataBaseController.cs" />
     <Compile Include="Interface\Factory\IFullFactoryFileBoxingHandler.cs" />
     <Compile Include="Interface\Settings\ISettingsFileBoxingParameters.cs" />
@@ -147,6 +163,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="programm.ico" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
