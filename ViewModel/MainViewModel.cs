@@ -126,6 +126,7 @@ namespace FilesBoxing.ViewModel
                 IsExecuting = true;
                 ThrowExceptionIfNotSuitableParameters();
                 var infoGetter = _factory.GetNewUserInfoGetter();
+                AddToLogSafeThread("Начата работа по выгрузке файлов!");
                 await Task.Run(HandlePackagingProcess);
 
                 void ThrowExceptionIfNotSuitableParameters()
