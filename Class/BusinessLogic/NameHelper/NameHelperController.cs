@@ -1,7 +1,8 @@
-﻿using System;
+﻿using FilesBoxing.Interface.BusinessLogic.NameHelper;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using FilesBoxing.Interface.BusinessLogic.NameHelper;
 
 namespace FilesBoxing.Class.BusinessLogic.NameHelper
 {
@@ -23,9 +24,9 @@ namespace FilesBoxing.Class.BusinessLogic.NameHelper
 
             bool NameHelperContainsRequireAnchors()
             {
-                var tempYear = _nameHelper.GetAnchorInfoByFieldName("YEAR");
-                var tempMonth = _nameHelper.GetAnchorInfoByFieldName("MONTH");
-                var tempCodeMo = _nameHelper.GetAnchorInfoByFieldName("CODE_MO");
+                var tempYear = _nameHelper.AnchorInfoByFieldName("YEAR");
+                var tempMonth = _nameHelper.AnchorInfoByFieldName("MONTH");
+                var tempCodeMo = _nameHelper.AnchorInfoByFieldName("CODE_MO");
                 return tempYear != null && tempMonth != null && tempCodeMo != null;
             }
         }
@@ -33,32 +34,32 @@ namespace FilesBoxing.Class.BusinessLogic.NameHelper
         {
             Year = newYear;
             Month = newMonth;
-            _periodAnchors = GetPeriodAchorsValues();
+            _periodAnchors = PeriodAchorsValues();
         }
-        public string GetTransformedValue(string source)
+        public string ConvertToTransformedValue(string source)
         {
-            return _nameHelper.GetTransformedValue(source, _periodAnchors);
+            return _nameHelper.TransformValue(source, _periodAnchors);
         }
-        public string GetTransformedValueForMo(string source, string codeMo)
+        public string ConvertToTransformedValueForMo(string source, string codeMo)
         {
             var tempSource = source;
             if (string.IsNullOrEmpty(tempSource))
-                tempSource = _nameHelper.GetPackageFileDefaultName();
-            return _nameHelper.GetTransformedValue(tempSource, GetFullAnchorCollection(codeMo));
+                tempSource = _nameHelper.CreatePackageFileDefaultName();
+            return _nameHelper.TransformValue(tempSource, FullAnchorCollection(codeMo));
         }
-        private IList<IAnchorValue> GetPeriodAchorsValues()
+        private IList<IAnchorValue> PeriodAchorsValues()
         {
             return new List<IAnchorValue>
                 {
-                   _nameHelper.GetAsAnchorValue(_nameHelper.GetAnchorInfoByFieldName("YEAR").Id, Year.ToString()),
-                   _nameHelper.GetAsAnchorValue(_nameHelper.GetAnchorInfoByFieldName("MONTH").Id, Month.ToString()),
+                   _nameHelper.ConvertToAnchorValue(_nameHelper.AnchorInfoByFieldName("YEAR").Id, Year.ToString()),
+                   _nameHelper.ConvertToAnchorValue(_nameHelper.AnchorInfoByFieldName("MONTH").Id, Month.ToString()),
                 };
         }
-        private ICollection<IAnchorValue> GetFullAnchorCollection(string codeMo)
+        private ICollection<IAnchorValue> FullAnchorCollection(string codeMo)
         {
             var baseAnchorsCopy = new List<IAnchorValue>(_periodAnchors)
             {
-                _nameHelper.GetAsAnchorValue(_idAnchorCodeMo, codeMo)
+                _nameHelper.ConvertToAnchorValue(_idAnchorCodeMo, codeMo)
             };
             return baseAnchorsCopy;
         }

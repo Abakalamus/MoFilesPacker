@@ -1,13 +1,14 @@
-﻿using System;
+﻿using FilesBoxing.Interface.BusinessLogic;
+
+using System;
 using System.Windows;
 using System.Windows.Forms;
-using FilesBoxing.Interface.BusinessLogic;
 
 namespace FilesBoxing.Class.BusinessLogic
 {
     public class UserInfoGetter : IUserInfoGetter
     {
-        public string GetDirectoryOutputPathByUserChoise(string defaultPath)
+        public string DirectoryOutputPathByUserChoise(string defaultPath)
         {
             var resultChosingOutputDirectory = UserWantUseDefaultOutputDirectoryMessageResult();
             return OutputDirectoryChoiseCanceled() ? string.Empty : GetDirectoryByUserChoise();

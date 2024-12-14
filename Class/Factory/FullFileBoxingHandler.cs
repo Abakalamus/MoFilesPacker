@@ -17,11 +17,11 @@ namespace FilesBoxing.Class.Factory
 {
     public class FullFileBoxingHandler : IFullFactoryFileBoxingHandler
     {
-        public IDataBaseController GetDataBaseController(string connectionString)
+        public IDataBaseController DataBaseController(string connectionString)
         {
             return new DataBaseController(connectionString);
         }
-        public IFilesCollectorToPackingHandler GetFilesCollectorToBoxingHandler(string tempDirectoryPath)
+        public IFilesCollectorToPackingHandler FilesCollectorToBoxingHandler(string tempDirectoryPath)
         {
             return new FilesCollectorToPackingHandler(GetBoxingHandler(new DirectoryInfo(tempDirectoryPath)), GetFilesCollector(), CreateEventHelper());
 
@@ -39,11 +39,11 @@ namespace FilesBoxing.Class.Factory
                 return new EventHandlerHelper();
             }
         }
-        public IMoProcessInfo GetNewMoProcessInfo(string codeMo)
+        public IMoProcessInfo NewMoProcessInfo(string codeMo)
         {
             return new MoProcessInfo(codeMo);
         }
-        public INameHelperController GetNameHelperController(int year, int month)
+        public INameHelperController NameHelperController(int year, int month)
         {
             return new NameHelperController(GetPackageFileNameHelper(), year, month);
 
@@ -51,13 +51,13 @@ namespace FilesBoxing.Class.Factory
             {
                 return new PackageNameHelper(GetAnchors());
 
-                IEnumerable<INameAnchor> GetAnchors()
+                IEnumerable<IFieldNameAnchor> GetAnchors()
                 {
-                    return new List<INameAnchor>
+                    return new List<IFieldNameAnchor>
                     {
-                        new NameAnchor(1, GetWrappedValue("CODE_MO"), "CODE_MO"),
-                        new NameAnchor(2, GetWrappedValue("YEAR"), "YEAR"),
-                        new NameAnchor(3, GetWrappedValue("MONTH"), "MONTH")
+                        new FieldNameAnchor(1, GetWrappedValue("CODE_MO"), "CODE_MO"),
+                        new FieldNameAnchor(2, GetWrappedValue("YEAR"), "YEAR"),
+                        new FieldNameAnchor(3, GetWrappedValue("MONTH"), "MONTH")
                     };
                 }
                 string GetWrappedValue(string source)
@@ -66,25 +66,17 @@ namespace FilesBoxing.Class.Factory
                 }
             }
         }
-        public IUserInfoGetter GetNewUserInfoGetter()
+        public IUserInfoGetter NewUserInfoGetter()
         {
             return new UserInfoGetter();
         }
-        public IMoWithName GetNewMoWithName(string codeMo, string name)
+        public IMoWithName NewMoWithName(string codeMo, string name)
         {
             return new MoWithName(codeMo, name);
         }
-        public IFileDirectoryInfo GetNewDirectoryInfo(string directoryPath, string extensionFile, IEnumerable<int> usingGroups)
+        public IFileDirectoryInfo NewDirectoryInfo(string directoryPath, string extensionFile, IEnumerable<int> usingGroups)
         {
             return new BaseFileDirectoryInfo(new DirectoryInfo(directoryPath), extensionFile, usingGroups);
         }
-        //public IFileDirectoryInfoUpdater GetFileDirectoryInfoUpdater(int year, int month)
-        //{
-        //    return new FileDirectoryInfoUpdater(GetPackageFileNameHelper(), year, month);
-        //}
-        //public IFilesCollectorHandlerParameter CreateFilesCollectorHandlerParameter(int year, int month, IEnumerable<string> moCollection, IEnumerable<IFileDirectoryInfo> directoryInfoCollection, string nameArchiveTemplate)
-        //{
-        //    return new FilesCollectorHandlerParameter(year, month, moCollection, directoryInfoCollection, nameArchiveTemplate);
-        //}
     }
 }

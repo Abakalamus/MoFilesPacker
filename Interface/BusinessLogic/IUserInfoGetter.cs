@@ -2,7 +2,7 @@
 {
     public interface IUserInfoGetter
     {
-        string GetDirectoryOutputPathByUserChoise(string defaultPath);
+        string DirectoryOutputPathByUserChoise(string defaultPath);
         bool IsUserWantOpenInExplorerPath(string path);
     }
 }

@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using FilesBoxing.Interface.BusinessLogic;
+using FilesBoxing.Interface.Settings;
+
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-using FilesBoxing.Interface.BusinessLogic;
-using FilesBoxing.Interface.Settings;
 
 namespace FilesBoxing.Class.Settings
 {
@@ -94,8 +95,6 @@ namespace FilesBoxing.Class.Settings
             }
             [XmlElement(ElementName = "ParentFileDirectory")]
             public string ParentFileDirectoryFullPath;
-            //[XmlElement("IsEnabled")]
-            //public bool IsEnabled { get; set; }
             [XmlElement("ExtensionFile")]
             public string ExtensionFile { get; set; }
             [XmlIgnore]
@@ -117,12 +116,10 @@ namespace FilesBoxing.Class.Settings
             public XmlFileDirectoryInfo(IFileDirectoryInfo source)
             {
                 ParentFileDirectory = source.ParentFileDirectory;
-              //  IsEnabled = source.IsEnabled;
                 ExtensionFile = source.ExtensionFile;
                 IdUsingGroups = source.IdUsingGroups;
             }
         }
-
         public class XmlTypeGroupingSettings : ITypeGroupingSettings
         {
             [XmlElement(ElementName = "Id")]

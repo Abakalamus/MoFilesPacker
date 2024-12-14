@@ -10,12 +10,10 @@ namespace FilesBoxing.Class.BusinessLogic.FilesCollector
         {
             return new SearchFileMoInfo(codeMo, filesCount);
         }
-
         public IProcessHandleMoInfo CreateProcessHandleParameterNoArchive(string codeMo)
         {
             return new ProcessHandleMoInfo(codeMo, false);
         }
-
         public IProcessHandleMoInfo CreateProcessHandleParameterCreateProcessHandleParameteArchiveComplite(string codeMo)
         {
             return new ProcessHandleMoInfo(codeMo, true);

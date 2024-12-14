@@ -5,7 +5,7 @@
         int Year { get;}
         int Month { get;}
         void UpdateYearMonthInfo(int newYear, int newMonth);
-        string GetTransformedValue(string source);
-        string GetTransformedValueForMo(string source, string codeMo);
+        string ConvertToTransformedValue(string source);
+        string ConvertToTransformedValueForMo(string source, string codeMo);
     }
 }

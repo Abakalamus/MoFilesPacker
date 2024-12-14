@@ -2,13 +2,13 @@
 
 namespace FilesBoxing.Class.BusinessLogic.NameHelper
 {
-    internal class NameAnchor : INameAnchor
+    internal class FieldNameAnchor : IFieldNameAnchor
     {
         public int Id { get; }
         public string Anchor { get; }
         public string FieldName { get; }
 
-        public NameAnchor(int id, string anchor, string fieldName)
+        public FieldNameAnchor(int id, string anchor, string fieldName)
         {
             Id = id;
             Anchor = anchor;

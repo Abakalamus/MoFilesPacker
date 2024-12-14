@@ -5,6 +5,6 @@ namespace FilesBoxing.Interface.BusinessLogic.FilesCollector
     public interface IFilesCollector
     {
         ICollection<IFileDirectoryInfo> FileDirectoryInfo { get; set; }
-        ICollection<string> GetFilesForPattern(string pattern);
+        ICollection<string> FilesForPattern(string pattern);
     }
 }

@@ -11,7 +11,7 @@ namespace FilesBoxing.View
         public MainWindow()
         {
             InitializeComponent();
-            var settings = SettingsHelper.GetSettingsFileBoxing("SETTINGS.XML");
+            var settings = SettingsHelper.SettingsFileBoxing("SETTINGS.XML");
             var viewModel = new MainViewModel(new FullFileBoxingHandler(), settings);
             DataContext = viewModel;
         }

@@ -10,15 +10,12 @@ namespace FilesBoxing.Interface.Factory
 {
     public interface IFullFactoryFileBoxingHandler
     {
-        IDataBaseController GetDataBaseController(string connectionString);
-        IFilesCollectorToPackingHandler GetFilesCollectorToBoxingHandler(string tempDirectoryPath);
-        IMoProcessInfo GetNewMoProcessInfo(string codeMo);
-        INameHelperController GetNameHelperController(int year, int month);
-        IUserInfoGetter GetNewUserInfoGetter();
-        IMoWithName GetNewMoWithName(string codeMo, string name);
-        IFileDirectoryInfo GetNewDirectoryInfo(string directoryPath, string extensionFile, IEnumerable<int> usingGroups);
-        // IFilesCollectorHandlerParameter CreateFilesCollectorHandlerParameter(int year, int month, IEnumerable<string> moCollection, IEnumerable<IFileDirectoryInfo> directoryInfoCollection, string nameArchiveTemplate);
-        // IFileDirectoryInfoUpdater GetFileDirectoryInfoUpdater(int year, int month);
-        //IFactoryFileBoxingHandler GetFileBoxingFactory();
+        IDataBaseController DataBaseController(string connectionString);
+        IFilesCollectorToPackingHandler FilesCollectorToBoxingHandler(string tempDirectoryPath);
+        IMoProcessInfo NewMoProcessInfo(string codeMo);
+        INameHelperController NameHelperController(int year, int month);
+        IUserInfoGetter NewUserInfoGetter();
+        IMoWithName NewMoWithName(string codeMo, string name);
+        IFileDirectoryInfo NewDirectoryInfo(string directoryPath, string extensionFile, IEnumerable<int> usingGroups);
     }
 }

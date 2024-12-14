@@ -27,18 +27,5 @@ namespace FilesBoxing.Class.Visual.Converter
         {
             throw new NotImplementedException();
         }
-        // return new object[] { 1, new List<int>{1} };
-        //public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        //{
-        //    var idSelectedGroup = System.Convert.ToInt32(value);
-        //    var idCollections = (IEnumerable<int>)parameter;
-
-        //    return idCollections.Contains(idSelectedGroup);
-        //}
-
-        //public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using FilesBoxing.Interface.BusinessLogic;
+
+using LibraryKurguzov.Class.Archive;
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FilesBoxing.Interface.BusinessLogic;
-using LibraryKurguzov.Class.Archive;
 
 namespace FilesBoxing.Class.BusinessLogic
 {

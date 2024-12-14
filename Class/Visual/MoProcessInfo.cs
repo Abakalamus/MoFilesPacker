@@ -31,7 +31,6 @@ namespace FilesBoxing.Class.Visual
                 OnPropertyChanged();
             }
         }
-
         public bool? IsPackageFileCreated
         {
             get => _isPackageFileCreated;
@@ -42,7 +41,6 @@ namespace FilesBoxing.Class.Visual
                 OnPropertyChanged();
             }
         }
-
         public bool IsSelected
         {
             get => _isSelected;
@@ -53,7 +51,6 @@ namespace FilesBoxing.Class.Visual
                 OnPropertyChanged();
             }
         }
-
         public MoProcessInfo(string codeMo)
         {
             CodeMo = codeMo;

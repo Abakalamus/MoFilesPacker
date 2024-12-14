@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-using FilesBoxing.Interface.DataBase;
+﻿using FilesBoxing.Interface.DataBase;
 
 using Oracle.ManagedDataAccess.Client;
+
+using System;
+using System.Collections.Generic;
 
 namespace FilesBoxing.Class.DataBase
 {
@@ -14,7 +14,7 @@ namespace FilesBoxing.Class.DataBase
         {
             _connectionString = connectionString;
         }
-        public IEnumerable<string> GetCodesMo()
+        public IEnumerable<string> CodesMo()
         {
             return GetCodesMoFomDbAsDataTable();
 

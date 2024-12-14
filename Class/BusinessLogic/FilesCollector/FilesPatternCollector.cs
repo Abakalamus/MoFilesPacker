@@ -18,10 +18,10 @@ namespace FilesBoxing.Class.BusinessLogic.FilesCollector
                 var check = value.GroupBy(x => new { x.ParentFileDirectory, x.ExtensionFile }).Where(gr => gr.Count() > 1);
                 if (check.Any())
                     throw new ApplicationException("Не допускается использование одинаковых каталогов с указанием одного и того же расширения файлов");
-                _fileDirectoryInfo = new List<IFileDirectoryInfo>(value);//.Where(x => x.IsEnabled)
+                _fileDirectoryInfo = new List<IFileDirectoryInfo>(value);
             }
         }
-        public ICollection<string> GetFilesForPattern(string pattern)
+        public ICollection<string> FilesForPattern(string pattern)
         {
             var collectionFiles = new List<string>();
             foreach (var info in FileDirectoryInfo)

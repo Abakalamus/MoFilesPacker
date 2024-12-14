@@ -38,80 +38,6 @@ namespace FilesBoxing.Class.BusinessLogic.FilesCollector
             _filesCollector = filesCollector;
             _eventHelper = eventHelper;
         }
-        //public void CreatePackageFilesForMoFiles(IFilesCollectorHandlerParameter parameter)
-        //{
-        //    //_filesCollector.FileDirectoryInfo = parameter.DirectoryInfoCollection;
-        //    //var nameArchive = string.IsNullOrEmpty(parameter.NameArchiveTemplate) ? _nameHelper.GetPackageFileDefaultName() : parameter.NameArchiveTemplate;
-        //    //var baseAnchors = GetPeriodAchorsValues();
-        //    //var idAnchorCodeMo = _nameHelper.GetAnchorInfoByFieldName("CODE_MO").Id;
-        //    //GetClearExistingDirectory(_fileBoxing.DirectoryForBoxingFile);
-        //    //var semaphore = new SemaphoreSlim(20, 20);
-        //    //var taskCollection = new List<Task>();
-        //    //foreach (var mo in parameter.MoCollection)
-        //    //{
-        //    //    semaphore.Wait();
-        //    //    taskCollection.Add(Task.Run(() =>
-        //    //    {
-        //    //        try
-        //    //        {
-        //    //            PackageFilesForMo(mo);
-        //    //        }
-        //    //        finally
-        //    //        {
-        //    //            semaphore.Release();
-        //    //        }
-        //    //    }));
-        //    //}
-        //    //Task.WaitAll(taskCollection.ToArray());
-
-        //    //IList<IAnchorValue> GetPeriodAchorsValues()
-        //    //{
-        //    //    return new List<IAnchorValue>
-        //    //        {
-        //    //           _nameHelper.GetAsAnchorValue(_nameHelper.GetAnchorInfoByFieldName("YEAR").Id, parameter.Year.ToString()),
-        //    //           _nameHelper.GetAsAnchorValue(_nameHelper.GetAnchorInfoByFieldName("MONTH").Id, parameter.Month.ToString()),
-        //    //        };
-        //    //}
-        //    //void GetClearExistingDirectory(DirectoryInfo directory)
-        //    //{
-        //    //    if (directory.Exists)
-        //    //        directory.Delete(true);
-        //    //    directory.Create();
-        //    //}
-        //    //ICollection<IAnchorValue> GetFullAnchorCollection(string codeMo)
-        //    //{
-        //    //    var baseAnchorsCopy = new List<IAnchorValue>(baseAnchors)
-        //    //    {
-        //    //        _nameHelper.GetAsAnchorValue(idAnchorCodeMo, codeMo)
-        //    //    };
-        //    //    return baseAnchorsCopy;
-        //    //}
-
-        //    //void PackageFilesForMo(string mo)
-        //    //{
-        //    //    var filesMo = _filesCollector.GetFilesForPattern(mo).ToList();
-        //    //    InformingFileSearchComplite();
-        //    //    if (!filesMo.Any())
-        //    //    {
-        //    //        InformingWorkComplite(false);
-        //    //        return;
-        //    //    }
-        //    //    _fileBoxing.BoxFiles(filesMo, _nameHelper.GetTransformedValue(nameArchive, GetFullAnchorCollection(mo)));
-        //    //    InformingWorkComplite();
-
-        //    //    void InformingFileSearchComplite()
-        //    //    {
-        //    //        OnFilesSearchComplite?.Invoke(this, _eventHelper.CreateSearchInfoParameter(mo, (byte)filesMo.Count));
-        //    //    }
-        //    //    void InformingWorkComplite(bool archiveCreated = true)
-        //    //    {
-        //    //        OnMoPackingComplite?.Invoke(this,
-        //    //            archiveCreated
-        //    //                ? _eventHelper.CreateProcessHandleParameterCreateProcessHandleParameteArchiveComplite(mo)
-        //    //                : _eventHelper.CreateProcessHandleParameterNoArchive(mo));
-        //    //    }
-        //    //}
-        //}
         public void CreatePackageFileForMoFiles(IReadOnlyCollection<IMoWithName> collectionInfo, byte countTask)
         {
             var taskCollection = new List<Task>();
@@ -139,16 +65,16 @@ namespace FilesBoxing.Class.BusinessLogic.FilesCollector
                 });
             }
         }
-        public void CreatePackageFileForMoFiles(string codeMo, string archiveName)
+        private void CreatePackageFileForMoFiles(string codeMo, string archiveName)
         {
-            var filesMo = _filesCollector.GetFilesForPattern(codeMo).ToList();
+            var filesMo = _filesCollector.FilesForPattern(codeMo).ToList();
             InformingFileSearchComplite();
             if (!filesMo.Any())
             {
                 InformingWorkComplite(false);
                 return;
             }
-            _fileBoxing.BoxFiles(filesMo, archiveName); //_nameHelper.GetTransformedValue(nameArchive, GetFullAnchorCollection(mo))
+            _fileBoxing.BoxFiles(filesMo, archiveName);
             InformingWorkComplite();
 
             void InformingFileSearchComplite()

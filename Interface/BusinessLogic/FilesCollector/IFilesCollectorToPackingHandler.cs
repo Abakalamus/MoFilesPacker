@@ -13,7 +13,6 @@ namespace FilesBoxing.Interface.BusinessLogic.FilesCollector
         DirectoryInfo SaveDirectory { get; }
         ICollection<IFileDirectoryInfo> DirectoryInfoCollection { get; set; }
         void CreatePackageFileForMoFiles(IReadOnlyCollection<IMoWithName> collectionInfo, byte countTask);
-        void CreatePackageFileForMoFiles(string codeMo, string archiveName);
 
     }
 }

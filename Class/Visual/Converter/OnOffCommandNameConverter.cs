@@ -1,9 +1,10 @@
-﻿using System;
+﻿using FilesBoxing.Interface.Visual;
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
-using FilesBoxing.Interface.Visual;
 
 namespace FilesBoxing.Class.Visual.Converter
 {

@@ -6,7 +6,7 @@ namespace FilesBoxing.Class.Factory
 {
     public class SettingsHelper
     {
-        public static ISettingsFileBoxing GetSettingsFileBoxing(string filePathSettings)
+        public static ISettingsFileBoxing SettingsFileBoxing(string filePathSettings)
         {
             return new SettingsFileBoxing(filePathSettings, GetSettingsXmlFullSerializator());
 

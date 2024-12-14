@@ -1,6 +1,6 @@
 ﻿namespace FilesBoxing.Interface.BusinessLogic.NameHelper
 {
-    public interface INameAnchor
+    public interface IFieldNameAnchor
     {
         int Id { get; }
         string Anchor { get; }

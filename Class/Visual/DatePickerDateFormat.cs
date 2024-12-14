@@ -1,42 +1,38 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
-using System.Windows;
 
 namespace FilesBoxing.Class.Visual
 {
     public class DatePickerDateFormat
     {
         public static readonly DependencyProperty DateFormatProperty = DependencyProperty.RegisterAttached("DateFormat", typeof(string), typeof(DatePickerDateFormat), new PropertyMetadata(OnDateFormatChanged));
-
-        public static string GetDateFormat(DependencyObject dobj)
+        public static string DateFormat(DependencyObject dobj)
         {
             return (string)dobj.GetValue(DateFormatProperty);
         }
-
         public static void SetDateFormat(DependencyObject dobj, string value)
         {
             dobj.SetValue(DateFormatProperty, value);
         }
-
         private static void OnDateFormatChanged(DependencyObject dobj, DependencyPropertyChangedEventArgs e)
         {
             var datePicker = (DatePicker)dobj;
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action<DatePicker>(ApplyDateFormat), datePicker);
         }
-
         private static void ApplyDateFormat(DatePicker datePicker)
         {
             var binding = new Binding("SelectedDate")
             {
                 RelativeSource = new RelativeSource { AncestorType = typeof(DatePicker) },
                 Converter = new DatePickerDateTimeConverter(),
-                ConverterParameter = new Tuple<DatePicker, string>(datePicker, GetDateFormat(datePicker))
+                ConverterParameter = new Tuple<DatePicker, string>(datePicker, DateFormat(datePicker))
             };
-            var textBox = GetTemplateTextBox(datePicker);
+            var textBox = TemplateTextBox(datePicker);
             textBox.SetBinding(TextBox.TextProperty, binding);
 
             textBox.PreviewKeyDown -= TextBoxOnPreviewKeyDown;
@@ -48,19 +44,15 @@ namespace FilesBoxing.Class.Visual
             datePicker.CalendarOpened -= DatePickerOnCalendarOpened;
             datePicker.CalendarOpened += DatePickerOnCalendarOpened;
         }
-
-
         private static void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
-
-        private static TextBox GetTemplateTextBox(Control control)
+        private static TextBox TemplateTextBox(Control control)
         {
             control.ApplyTemplate();
             return (TextBox)control.Template.FindName("PART_TextBox", control);
         }
-
         private static void TextBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Return)
@@ -75,10 +67,9 @@ namespace FilesBoxing.Class.Visual
             var textBox = (TextBox)sender;
             var datePicker = (DatePicker)textBox.TemplatedParent;
             var dateStr = textBox.Text;
-            var formatStr = GetDateFormat(datePicker);
+            var formatStr = DateFormat(datePicker);
             datePicker.SelectedDate = DatePickerDateTimeConverter.StringToDateTime(datePicker, formatStr, dateStr);
         }
-
         private static void DatePickerOnCalendarOpened(object sender, RoutedEventArgs e)
         {
             /* When DatePicker's TextBox is not focused and its Calendar is opened by clicking its calendar button
@@ -86,16 +77,15 @@ namespace FilesBoxing.Class.Visual
              * date is selected. A workaround is to set this string when it is opened. */
 
             var datePicker = (DatePicker)sender;
-            var textBox = GetTemplateTextBox(datePicker);
-            var formatStr = GetDateFormat(datePicker);
+            var textBox = TemplateTextBox(datePicker);
+            var formatStr = DateFormat(datePicker);
             textBox.Text = DatePickerDateTimeConverter.DateTimeToString(formatStr, datePicker.SelectedDate);
         }
-
         private class DatePickerDateTimeConverter : IValueConverter
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             {
-                var formatStr = ((Tuple<DatePicker, string>)parameter).Item2;
+                var formatStr = ((Tuple<DatePicker, string>)parameter)?.Item2;
                 var selectedDate = (DateTime?)value;
                 return DateTimeToString(formatStr, selectedDate);
             }
@@ -104,19 +94,18 @@ namespace FilesBoxing.Class.Visual
             {
                 var tupleParam = ((Tuple<DatePicker, string>)parameter);
                 var dateStr = (string)value;
-                return StringToDateTime(tupleParam.Item1, tupleParam.Item2, dateStr);
+                return StringToDateTime(tupleParam?.Item1, tupleParam?.Item2, dateStr);
             }
 
             public static string DateTimeToString(string formatStr, DateTime? selectedDate)
             {
-                return selectedDate.HasValue ? selectedDate.Value.ToString(formatStr) : null;
+                return selectedDate?.ToString(formatStr);
             }
 
             public static DateTime? StringToDateTime(DatePicker datePicker, string formatStr, string dateStr)
             {
-                DateTime date;
                 var canParse = DateTime.TryParseExact(dateStr, formatStr, CultureInfo.CurrentCulture,
-                                                      DateTimeStyles.None, out date);
+                                                      DateTimeStyles.None, out var date);
 
                 if (!canParse)
                     canParse = DateTime.TryParse(dateStr, CultureInfo.CurrentCulture, DateTimeStyles.None, out date);

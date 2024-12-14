@@ -1,5 +1,6 @@
-﻿using System.IO;
-using FilesBoxing.Interface.Settings;
+﻿using FilesBoxing.Interface.Settings;
+
+using System.IO;
 
 namespace FilesBoxing.Class.Settings
 {
